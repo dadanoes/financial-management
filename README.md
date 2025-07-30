@@ -1,46 +1,160 @@
-# Getting Started with Create React App
+# Aplikasi Manajemen Keuangan Toko Terpusat
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplikasi web untuk mengelola keuangan terpusat dari berbagai toko dengan fitur pencatatan transaksi, ringkasan keuangan, dan dashboard yang responsif.
 
-## Available Scripts
+## Fitur Utama
 
-In the project directory, you can run:
+### 📊 Ringkasan Keuangan Per Toko
 
-### `npm start`
+- Tampilkan total pemasukan, pengeluaran, dan saldo bersih untuk setiap toko
+- Visualisasi data dengan kartu yang informatif
+- Warna yang berbeda untuk pemasukan (hijau) dan pengeluaran (merah)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 🏢 Ringkasan Keuangan Konsolidasi
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Dashboard terpusat untuk semua toko
+- Total pemasukan, pengeluaran, dan saldo bersih keseluruhan
+- Tampilan yang mudah dipahami dengan ikon yang intuitif
 
-### `npm test`
+### ➕ Pencatatan Transaksi Manual
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Form untuk menambah transaksi pemasukan dan pengeluaran
+- Pilihan nama toko dari daftar yang tersedia
+- Input jumlah, tanggal, dan deskripsi transaksi
+- Validasi form yang memastikan data lengkap
 
-### `npm run build`
+### 📋 Daftar Transaksi
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Tampilan semua transaksi dengan detail lengkap
+- Filter berdasarkan toko dan jenis transaksi
+- Kemampuan melihat detail transaksi dalam modal
+- Fungsi hapus transaksi dengan konfirmasi
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Teknologi yang Digunakan
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Frontend**: React.js dengan TypeScript
+- **Styling**: Tailwind CSS
+- **Backend & Database**: Firebase Firestore
+- **Icons**: Heroicons
+- **UI Components**: Headless UI
 
-### `npm run eject`
+## Instalasi dan Setup
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 1. Clone Repository
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+git clone <repository-url>
+cd financial-management-app
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 2. Install Dependencies
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+npm install
+```
 
-## Learn More
+### 3. Setup Firebase
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Buat project baru di [Firebase Console](https://console.firebase.google.com/)
+2. Aktifkan Firestore Database
+3. Dapatkan konfigurasi Firebase dari project settings
+4. Update file `src/firebase.ts` dengan konfigurasi Anda:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```typescript
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id",
+};
+```
+
+### 4. Jalankan Aplikasi
+
+```bash
+npm start
+```
+
+Aplikasi akan berjalan di `http://localhost:3000`
+
+## Struktur Proyek
+
+```
+src/
+├── components/
+│   ├── Header.tsx              # Header aplikasi
+│   ├── FinancialSummary.tsx    # Ringkasan keuangan
+│   ├── AddTransaction.tsx      # Form tambah transaksi
+│   ├── TransactionList.tsx     # Daftar transaksi
+│   └── LoadingSpinner.tsx      # Komponen loading
+├── hooks/
+│   └── useFirestore.ts         # Hook untuk Firebase
+├── types/
+│   └── index.ts                # Definisi tipe TypeScript
+├── firebase.ts                 # Konfigurasi Firebase
+└── App.tsx                     # Komponen utama
+```
+
+## Fitur Responsif
+
+Aplikasi dirancang responsif dan dapat digunakan di berbagai perangkat:
+
+- **Desktop**: Layout 3 kolom untuk ringkasan keuangan
+- **Tablet**: Layout 2 kolom yang menyesuaikan
+- **Mobile**: Layout 1 kolom dengan navigasi yang mudah
+
+## Keamanan
+
+- Validasi input di sisi client
+- Konfirmasi untuk aksi penghapusan
+- Error handling yang komprehensif
+- Data tersimpan aman di Firebase Firestore
+
+## Penggunaan
+
+### Menambah Transaksi Baru
+
+1. Klik tombol "Tambah Transaksi"
+2. Pilih nama toko dari dropdown
+3. Pilih jenis transaksi (Pemasukan/Pengeluaran)
+4. Masukkan jumlah dalam Rupiah
+5. Pilih tanggal transaksi
+6. Tambahkan deskripsi
+7. Klik "Simpan Transaksi"
+
+### Melihat Detail Transaksi
+
+1. Klik ikon mata (👁️) pada transaksi yang ingin dilihat
+2. Modal akan menampilkan detail lengkap transaksi
+3. Klik "Tutup" untuk menutup modal
+
+### Menghapus Transaksi
+
+1. Klik ikon tempat sampah (🗑️) pada transaksi
+2. Konfirmasi penghapusan
+3. Transaksi akan dihapus dari database
+
+### Filter Transaksi
+
+1. Gunakan dropdown "Filter Toko" untuk melihat transaksi toko tertentu
+2. Gunakan dropdown "Filter Jenis" untuk melihat pemasukan atau pengeluaran saja
+
+## Kontribusi
+
+Untuk berkontribusi pada proyek ini:
+
+1. Fork repository
+2. Buat branch fitur baru (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+## Lisensi
+
+Proyek ini dilisensikan di bawah MIT License.
+
+## Dukungan
+
+Jika Anda mengalami masalah atau memiliki pertanyaan, silakan buat issue di repository ini.
