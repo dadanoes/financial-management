@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import FinancialSummary from "./components/FinancialSummary";
 import AddTransaction from "./components/AddTransaction";
@@ -29,15 +29,30 @@ function App() {
     updateStore,
     deleteStore,
     calculateFinancialSummary,
+    ensureAdminTokoStore,
   } = useFirestore();
 
   const handleLogin = (username: string, password: string): boolean => {
-    return login(username, password);
+    const success = login(username, password);
+
+    // Jika admin toko berhasil login, pastikan tokonya ada
+    if (success && username === "admintoko") {
+      ensureAdminTokoStore();
+    }
+
+    return success;
   };
 
   const handleLogout = () => {
     logout();
   };
+
+  // Ensure admin toko store exists when component mounts
+  useEffect(() => {
+    if (level === "admintoko" && userStore) {
+      ensureAdminTokoStore();
+    }
+  }, [level, userStore, ensureAdminTokoStore]);
 
   const handleAddTransaction = async (transactionData: any) => {
     try {

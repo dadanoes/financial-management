@@ -25,11 +25,8 @@ const AddTransaction: React.FC<Props> = ({
     date: new Date().toISOString().split("T")[0],
   });
 
-  // Filter stores untuk admin toko (hanya tokonya)
-  const availableStores =
-    level === "admintoko" && userStore
-      ? stores.filter((store) => store.name === userStore)
-      : stores;
+  // Filter stores untuk admin toko (semua toko tersedia)
+  const availableStores = stores;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +48,7 @@ const AddTransaction: React.FC<Props> = ({
 
     // Reset form
     setFormData({
-      storeName: level === "admintoko" && userStore ? userStore : "",
+      storeName: "",
       amount: "",
       type: "income",
       description: "",
@@ -81,11 +78,6 @@ const AddTransaction: React.FC<Props> = ({
             <span className="text-green-600 font-bold">➕</span>
           </div>
           Tambah Transaksi
-          {level === "admintoko" && userStore && (
-            <span className="ml-2 text-sm font-normal text-gray-600">
-              - {userStore}
-            </span>
-          )}
         </h2>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -111,7 +103,7 @@ const AddTransaction: React.FC<Props> = ({
                   <p className="text-yellow-800 text-sm">
                     ⚠️{" "}
                     {level === "admintoko"
-                      ? "Tidak ada toko yang tersedia untuk Anda."
+                      ? "Belum ada toko yang tersedia. Silakan hubungi Admin Utama untuk menambahkan toko."
                       : 'Belum ada toko yang ditambahkan. Silakan tambah toko terlebih dahulu di menu "Kelola Toko".'}
                   </p>
                 </div>
@@ -121,7 +113,6 @@ const AddTransaction: React.FC<Props> = ({
                   value={formData.storeName}
                   onChange={handleInputChange}
                   className="form-select"
-                  disabled={level === "admintoko" && !!userStore}
                 >
                   <option value="">Pilih Toko</option>
                   {availableStores.map((store) => (
