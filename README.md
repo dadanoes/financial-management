@@ -2,24 +2,6 @@
 
 Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan.
 
-##### TEST
-
-## 📋 Update Terbaru (v2.0)
-
-### ✅ Perubahan yang Telah Dilakukan:
-
-1. **Penghapusan Section "Ringkasan Toko Anda"** untuk admin toko
-2. **Perbaikan Riwayat Transaksi** - Admin toko dapat melihat semua transaksi dengan kolom toko
-3. **Optimasi Performa** - Menghapus kode yang tidak digunakan
-4. **Perbaikan UI/UX** - Tampilan yang lebih bersih untuk admin toko
-
-### 🔧 Fitur yang Diperbaiki:
-
-- Admin toko tidak lagi melihat section "Ringkasan Toko Anda"
-- Riwayat transaksi admin toko menampilkan semua transaksi dari semua toko
-- Ditambahkan kolom "Toko" di tabel riwayat transaksi
-- Sample data button tersedia untuk admin toko
-
 ## ✨ Fitur Utama
 
 ### 🔐 Sistem Autentikasi Multi-Level
