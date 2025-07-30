@@ -27,7 +27,7 @@ const FinancialSummary: React.FC<Props> = ({
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
               <span className="text-blue-600 font-bold">📊</span>
             </div>
-            Ringkasan Keuangan Konsolidasi
+            Ringkasan Keuangan Keseluruhan
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-shadow">
