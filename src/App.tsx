@@ -3,19 +3,21 @@ import Header from "./components/Header";
 import FinancialSummary from "./components/FinancialSummary";
 import AddTransaction from "./components/AddTransaction";
 import TransactionList from "./components/TransactionList";
+import TransactionHistory from "./components/TransactionHistory";
 import LoadingSpinner from "./components/LoadingSpinner";
 import SampleDataButton from "./components/SampleDataButton";
 import StoreManager from "./components/StoreManager";
+import FinancialAnalytics from "./components/FinancialAnalytics";
 import Login from "./components/Login";
 import { useFirestore } from "./hooks/useFirestore";
 import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const [activeTab, setActiveTab] = useState<"dashboard" | "stores">(
-    "dashboard"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "stores" | "analytics"
+  >("dashboard");
 
-  const { isAuthenticated, user, login, logout } = useAuth();
+  const { isAuthenticated, user, level, userStore, login, logout } = useAuth();
 
   const {
     transactions,
@@ -101,7 +103,7 @@ function App() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header user={user} onLogout={handleLogout} />
+        <Header user={user} level={level} onLogout={handleLogout} />
         <div className="container mx-auto px-4 py-8">
           <LoadingSpinner />
         </div>
@@ -113,67 +115,143 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header user={user} onLogout={handleLogout} />
+      <Header user={user} level={level} onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Tab Navigation */}
-        <div className="mb-8">
-          <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
-                activeTab === "dashboard"
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-              }`}
-            >
-              📊 Dashboard
-            </button>
-            <button
-              onClick={() => setActiveTab("stores")}
-              className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
-                activeTab === "stores"
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-              }`}
-            >
-              🏪 Kelola Toko
-            </button>
+        {/* Tab Navigation - Only show for admin utama */}
+        {level === "admin" && (
+          <div className="mb-8">
+            <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                  activeTab === "dashboard"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                📊 Dashboard
+              </button>
+              <button
+                onClick={() => setActiveTab("analytics")}
+                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                  activeTab === "analytics"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                📈 Analisis
+              </button>
+              <button
+                onClick={() => setActiveTab("stores")}
+                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                  activeTab === "stores"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                🏪 Kelola Toko
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {activeTab === "dashboard" ? (
+        {/* Admin Toko - Only Dashboard */}
+        {level === "admintoko" && (
           <div className="space-y-8">
             {/* Financial Summary */}
-            <FinancialSummary summary={financialSummary} />
-
-            {/* Sample Data Button */}
-            {transactions.length === 0 && stores.length > 0 && (
-              <SampleDataButton onAddTransactions={handleAddSampleData} />
-            )}
+            <FinancialSummary
+              summary={financialSummary}
+              level={level}
+              userStore={userStore}
+              transactions={transactions}
+            />
 
             {/* Add Transaction */}
             <AddTransaction
               onAddTransaction={handleAddTransaction}
               stores={stores}
+              level={level}
+              userStore={userStore}
             />
 
-            {/* Transaction List */}
-            <TransactionList
+            {/* Transaction History - Hanya riwayat transaksi */}
+            <TransactionHistory
               transactions={transactions}
-              onDeleteTransaction={handleDeleteTransaction}
+              userStore={userStore}
             />
+
+            {/* Access Restricted Message */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <div className="flex items-center">
+                <span className="text-yellow-600 text-2xl mr-3">🔒</span>
+                <div>
+                  <h3 className="text-yellow-800 font-bold text-lg">
+                    Akses Terbatas
+                  </h3>
+                  <p className="text-yellow-700 text-sm">
+                    Sebagai Admin Toko, Anda hanya dapat menambah transaksi dan
+                    melihat ringkasan keuangan toko Anda. Untuk akses penuh,
+                    hubungi Admin Utama.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="space-y-8">
-            {/* Store Manager */}
-            <StoreManager
-              stores={stores}
-              onAddStore={handleAddStore}
-              onDeleteStore={handleDeleteStore}
-              onEditStore={handleUpdateStore}
-            />
-          </div>
+        )}
+
+        {/* Admin Utama - Full Access */}
+        {level === "admin" && (
+          <>
+            {activeTab === "dashboard" && (
+              <div className="space-y-8">
+                {/* Financial Summary */}
+                <FinancialSummary
+                  summary={financialSummary}
+                  level={level}
+                  transactions={transactions}
+                />
+
+                {/* Sample Data Button */}
+                {transactions.length === 0 && stores.length > 0 && (
+                  <SampleDataButton onAddTransactions={handleAddSampleData} />
+                )}
+
+                {/* Add Transaction */}
+                <AddTransaction
+                  onAddTransaction={handleAddTransaction}
+                  stores={stores}
+                  level={level}
+                  userStore={userStore}
+                />
+
+                {/* Transaction List */}
+                <TransactionList
+                  transactions={transactions}
+                  onDeleteTransaction={handleDeleteTransaction}
+                />
+              </div>
+            )}
+
+            {activeTab === "analytics" && (
+              <div className="space-y-8">
+                {/* Financial Analytics */}
+                <FinancialAnalytics transactions={transactions} />
+              </div>
+            )}
+
+            {activeTab === "stores" && (
+              <div className="space-y-8">
+                {/* Store Manager */}
+                <StoreManager
+                  stores={stores}
+                  onAddStore={handleAddStore}
+                  onDeleteStore={handleDeleteStore}
+                  onEditStore={handleUpdateStore}
+                />
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 interface AuthState {
   isAuthenticated: boolean;
   user: string | null;
+  level: "admin" | "admintoko" | null;
+  userStore?: string; // Toko yang dikelola oleh admin toko
 }
 
 export const useAuth = () => {
@@ -15,20 +17,24 @@ export const useAuth = () => {
         return {
           isAuthenticated: parsed.isAuthenticated || false,
           user: parsed.user || null,
+          level: parsed.level || null,
+          userStore: parsed.userStore || null,
         };
       } catch {
-        return { isAuthenticated: false, user: null };
+        return { isAuthenticated: false, user: null, level: null };
       }
     }
-    return { isAuthenticated: false, user: null };
+    return { isAuthenticated: false, user: null, level: null };
   });
 
   const login = (username: string, password: string): boolean => {
-    // Simple authentication - in production, this should be server-side
+    // Admin utama - akses penuh
     if (username === "admin" && password === "admin123") {
       const newAuthState = {
         isAuthenticated: true,
         user: username,
+        level: "admin" as const,
+        userStore: undefined,
       };
       setAuthState(newAuthState);
 
@@ -37,6 +43,23 @@ export const useAuth = () => {
 
       return true;
     }
+
+    // Admin toko - akses terbatas
+    if (username === "admintoko" && password === "admintoko") {
+      const newAuthState = {
+        isAuthenticated: true,
+        user: username,
+        level: "admintoko" as const,
+        userStore: "Toko Admin", // Default store untuk admin toko
+      };
+      setAuthState(newAuthState);
+
+      // Save to localStorage
+      localStorage.setItem("financial-app-auth", JSON.stringify(newAuthState));
+
+      return true;
+    }
+
     return false;
   };
 
@@ -44,6 +67,8 @@ export const useAuth = () => {
     const newAuthState = {
       isAuthenticated: false,
       user: null,
+      level: null,
+      userStore: undefined,
     };
     setAuthState(newAuthState);
 
@@ -57,10 +82,12 @@ export const useAuth = () => {
     if (savedAuth) {
       try {
         const parsed = JSON.parse(savedAuth);
-        if (parsed.isAuthenticated && parsed.user) {
+        if (parsed.isAuthenticated && parsed.user && parsed.level) {
           setAuthState({
             isAuthenticated: true,
             user: parsed.user,
+            level: parsed.level,
+            userStore: parsed.userStore || null,
           });
         }
       } catch {
@@ -73,6 +100,8 @@ export const useAuth = () => {
   return {
     isAuthenticated: authState.isAuthenticated,
     user: authState.user,
+    level: authState.level,
+    userStore: authState.userStore,
     login,
     logout,
   };

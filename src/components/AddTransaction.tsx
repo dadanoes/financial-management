@@ -6,17 +6,30 @@ interface Props {
     transaction: Omit<Transaction, "id" | "createdAt">
   ) => void;
   stores: Store[];
+  level?: "admin" | "admintoko" | null;
+  userStore?: string;
 }
 
-const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
+const AddTransaction: React.FC<Props> = ({
+  onAddTransaction,
+  stores,
+  level = "admin",
+  userStore,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    storeName: "",
+    storeName: level === "admintoko" && userStore ? userStore : "",
     amount: "",
     type: "income" as "income" | "expense",
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
+
+  // Filter stores untuk admin toko (hanya tokonya)
+  const availableStores =
+    level === "admintoko" && userStore
+      ? stores.filter((store) => store.name === userStore)
+      : stores;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +51,7 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
 
     // Reset form
     setFormData({
-      storeName: "",
+      storeName: level === "admintoko" && userStore ? userStore : "",
       amount: "",
       type: "income",
       description: "",
@@ -68,6 +81,11 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
             <span className="text-green-600 font-bold">➕</span>
           </div>
           Tambah Transaksi
+          {level === "admintoko" && userStore && (
+            <span className="ml-2 text-sm font-normal text-gray-600">
+              - {userStore}
+            </span>
+          )}
         </h2>
         <button
           onClick={() => setIsOpen(!isOpen)}
@@ -88,11 +106,13 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
               <label className="block text-sm font-bold text-gray-700 mb-2">
                 🏪 Pilih Toko *
               </label>
-              {stores.length === 0 ? (
+              {availableStores.length === 0 ? (
                 <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <p className="text-yellow-800 text-sm">
-                    ⚠️ Belum ada toko yang ditambahkan. Silakan tambah toko
-                    terlebih dahulu di menu "Kelola Toko".
+                    ⚠️{" "}
+                    {level === "admintoko"
+                      ? "Tidak ada toko yang tersedia untuk Anda."
+                      : 'Belum ada toko yang ditambahkan. Silakan tambah toko terlebih dahulu di menu "Kelola Toko".'}
                   </p>
                 </div>
               ) : (
@@ -101,10 +121,10 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
                   value={formData.storeName}
                   onChange={handleInputChange}
                   className="form-select"
-                  required
+                  disabled={level === "admintoko" && !!userStore}
                 >
                   <option value="">Pilih Toko</option>
-                  {stores.map((store) => (
+                  {availableStores.map((store) => (
                     <option key={store.id} value={store.name}>
                       {store.name}
                     </option>

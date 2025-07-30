@@ -3,42 +3,29 @@ import { Transaction } from "../types";
 
 interface Props {
   transactions: Transaction[];
-  onDeleteTransaction: (id: string) => void;
+  userStore?: string;
 }
 
-const TransactionList: React.FC<Props> = ({
-  transactions,
-  onDeleteTransaction,
-}) => {
-  const [selectedStore, setSelectedStore] = useState<string>("all");
+const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"date" | "amount" | "store">("date");
+  const [sortBy, setSortBy] = useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
 
-  // Get unique store names
-  const storeNames = useMemo(() => {
-    const names = Array.from(new Set(transactions.map((t) => t.storeName)));
-    return names.sort();
-  }, [transactions]);
-
-  // Filter and sort transactions
-  const filteredAndSortedTransactions = useMemo(() => {
+  // Filter transaksi untuk admin toko (hanya tokonya)
+  const filteredTransactions = useMemo(() => {
     let filtered = transactions.filter((transaction) => {
-      // Store filter
-      if (selectedStore !== "all" && transaction.storeName !== selectedStore) {
+      // Filter berdasarkan toko
+      if (userStore && transaction.storeName !== userStore) {
         return false;
       }
 
-      // Type filter
+      // Filter berdasarkan jenis transaksi
       if (selectedType !== "all" && transaction.type !== selectedType) {
         return false;
       }
 
-      // Date filter
+      // Filter berdasarkan tanggal
       if (selectedDateFilter !== "all") {
         const transactionDate = new Date(transaction.date);
         const today = new Date();
@@ -82,7 +69,7 @@ const TransactionList: React.FC<Props> = ({
       return true;
     });
 
-    // Sort transactions
+    // Sort transaksi
     filtered.sort((a, b) => {
       let comparison = 0;
 
@@ -93,9 +80,6 @@ const TransactionList: React.FC<Props> = ({
         case "amount":
           comparison = a.amount - b.amount;
           break;
-        case "store":
-          comparison = a.storeName.localeCompare(b.storeName);
-          break;
       }
 
       return sortOrder === "asc" ? comparison : -comparison;
@@ -104,28 +88,12 @@ const TransactionList: React.FC<Props> = ({
     return filtered;
   }, [
     transactions,
-    selectedStore,
+    userStore,
     selectedType,
     selectedDateFilter,
     sortBy,
     sortOrder,
   ]);
-
-  const handleDelete = (id: string) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
-      onDeleteTransaction(id);
-    }
-  };
-
-  const handleViewDetails = (transaction: Transaction) => {
-    setSelectedTransaction(transaction);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedTransaction(null);
-  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -148,7 +116,7 @@ const TransactionList: React.FC<Props> = ({
     return sortOrder === "asc" ? "↑" : "↓";
   };
 
-  const handleSort = (field: "date" | "amount" | "store") => {
+  const handleSort = (field: "date" | "amount") => {
     if (sortBy === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -158,33 +126,17 @@ const TransactionList: React.FC<Props> = ({
   };
 
   return (
-    <div className="transaction-list-container">
-      <div className="transaction-list-header">
-        <h2 className="transaction-list-title">📋 Daftar Transaksi</h2>
-        <p className="transaction-list-subtitle">
-          Total: {filteredAndSortedTransactions.length} transaksi
+    <div className="transaction-history-container">
+      <div className="transaction-history-header">
+        <h2 className="transaction-history-title">📋 Riwayat Transaksi</h2>
+        <p className="transaction-history-subtitle">
+          Total: {filteredTransactions.length} transaksi
         </p>
       </div>
 
       {/* Filters */}
       <div className="filters-section">
         <div className="filters-row">
-          <div className="filter-group">
-            <label className="filter-label">🏪 Filter Toko:</label>
-            <select
-              value={selectedStore}
-              onChange={(e) => setSelectedStore(e.target.value)}
-              className="filter-select"
-            >
-              <option value="all">Semua Toko</option>
-              {storeNames.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div className="filter-group">
             <label className="filter-label">💰 Filter Jenis:</label>
             <select
@@ -226,12 +178,6 @@ const TransactionList: React.FC<Props> = ({
               >
                 Tanggal {getSortIcon("date")}
               </th>
-              <th
-                className="sortable-header"
-                onClick={() => handleSort("store")}
-              >
-                Toko {getSortIcon("store")}
-              </th>
               <th>Jenis</th>
               <th
                 className="sortable-header"
@@ -240,13 +186,12 @@ const TransactionList: React.FC<Props> = ({
                 Jumlah {getSortIcon("amount")}
               </th>
               <th>Deskripsi</th>
-              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedTransactions.length === 0 ? (
+            {filteredTransactions.length === 0 ? (
               <tr>
-                <td colSpan={6} className="empty-message">
+                <td colSpan={4} className="empty-message">
                   <div className="empty-state">
                     <span className="empty-icon">📝</span>
                     <p>Tidak ada transaksi yang ditemukan</p>
@@ -254,10 +199,9 @@ const TransactionList: React.FC<Props> = ({
                 </td>
               </tr>
             ) : (
-              filteredAndSortedTransactions.map((transaction) => (
+              filteredTransactions.map((transaction) => (
                 <tr key={transaction.id} className="transaction-row">
                   <td className="date-cell">{formatDate(transaction.date)}</td>
-                  <td className="store-cell">{transaction.storeName}</td>
                   <td className="type-cell">
                     <span
                       className={`type-badge ${
@@ -277,25 +221,7 @@ const TransactionList: React.FC<Props> = ({
                     {formatCurrency(transaction.amount)}
                   </td>
                   <td className="description-cell">
-                    {transaction.description.length > 50
-                      ? `${transaction.description.substring(0, 50)}...`
-                      : transaction.description}
-                  </td>
-                  <td className="actions-cell">
-                    <button
-                      onClick={() => handleViewDetails(transaction)}
-                      className="action-button view-button"
-                      title="Lihat Detail"
-                    >
-                      👁️
-                    </button>
-                    <button
-                      onClick={() => handleDelete(transaction.id)}
-                      className="action-button delete-button"
-                      title="Hapus Transaksi"
-                    >
-                      🗑️
-                    </button>
+                    {transaction.description}
                   </td>
                 </tr>
               ))
@@ -303,73 +229,8 @@ const TransactionList: React.FC<Props> = ({
           </tbody>
         </table>
       </div>
-
-      {/* Detail Modal */}
-      {showModal && selectedTransaction && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Detail Transaksi</h3>
-              <button onClick={closeModal} className="modal-close">
-                ✕
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="detail-row">
-                <span className="detail-label">Tanggal:</span>
-                <span className="detail-value">
-                  {formatDate(selectedTransaction.date)}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Toko:</span>
-                <span className="detail-value">
-                  {selectedTransaction.storeName}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Jenis:</span>
-                <span className="detail-value">
-                  <span
-                    className={`type-badge ${
-                      selectedTransaction.type === "income"
-                        ? "income"
-                        : "expense"
-                    }`}
-                  >
-                    {selectedTransaction.type === "income"
-                      ? "💰 Pemasukan"
-                      : "💸 Pengeluaran"}
-                  </span>
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Jumlah:</span>
-                <span
-                  className={`detail-value ${
-                    selectedTransaction.type === "income" ? "income" : "expense"
-                  }`}
-                >
-                  {formatCurrency(selectedTransaction.amount)}
-                </span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Deskripsi:</span>
-                <span className="detail-value">
-                  {selectedTransaction.description}
-                </span>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button onClick={closeModal} className="modal-button">
-                Tutup
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default TransactionList;
+export default TransactionHistory;

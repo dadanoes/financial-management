@@ -99,21 +99,6 @@ const Login: React.FC<Props> = ({ onLogin }) => {
             )}
           </button>
         </form>
-
-        {/* Help Text */}
-        <div className="help-section">
-          <div className="help-card">
-            <p className="help-title">💡 Informasi Login:</p>
-            <div className="help-credentials">
-              <p className="help-item">
-                Username: <span className="credential">admin</span>
-              </p>
-              <p className="help-item">
-                Password: <span className="credential">admin123</span>
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
