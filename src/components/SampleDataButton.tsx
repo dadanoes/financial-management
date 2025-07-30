@@ -28,16 +28,23 @@ const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-blue-800 mb-2">Data Sample</h3>
-      <p className="text-blue-700 text-sm mb-3">
-        Tambahkan data sample untuk melihat bagaimana aplikasi bekerja dengan
-        data yang sudah ada.
-      </p>
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl p-6">
+      <div className="flex items-center mb-4">
+        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
+          <span className="text-white text-xl">🎯</span>
+        </div>
+        <div>
+          <h3 className="text-lg font-bold text-blue-800">Data Sample</h3>
+          <p className="text-blue-700 text-sm">
+            Tambah data contoh untuk melihat fitur aplikasi
+          </p>
+        </div>
+      </div>
       <button
         onClick={handleAddSampleData}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
+        className="btn btn-blue flex items-center"
       >
+        <span className="mr-2">📊</span>
         Tambah Data Sample
       </button>
     </div>

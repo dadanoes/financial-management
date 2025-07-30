@@ -7,13 +7,15 @@ import {
   onSnapshot,
   query,
   orderBy,
+  updateDoc,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { Transaction, Store, FinancialSummary } from "../types";
+import { Transaction, Store, StoreSummary, FinancialSummary } from "../types";
 
 export const useFirestore = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Listen to transactions changes
@@ -44,6 +46,29 @@ export const useFirestore = () => {
     return () => unsubscribe();
   }, []);
 
+  // Listen to stores changes
+  useEffect(() => {
+    const q = query(collection(db, "stores"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const storesData: Store[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        storesData.push({
+          id: doc.id,
+          name: data.name,
+          description: data.description || "",
+          address: data.address || "",
+          phone: data.phone || "",
+          createdAt: data.createdAt.toDate(),
+        });
+      });
+      setStores(storesData);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Add transaction
   const addTransaction = async (
     transactionData: Omit<Transaction, "id" | "createdAt">
@@ -69,9 +94,48 @@ export const useFirestore = () => {
     }
   };
 
+  // Add store
+  const addStore = async (storeData: Omit<Store, "id" | "createdAt">) => {
+    try {
+      await addDoc(collection(db, "stores"), {
+        ...storeData,
+        createdAt: Timestamp.now(),
+      });
+    } catch (error) {
+      console.error("Error adding store:", error);
+      throw error;
+    }
+  };
+
+  // Update store
+  const updateStore = async (
+    id: string,
+    storeData: Omit<Store, "id" | "createdAt">
+  ) => {
+    try {
+      await updateDoc(doc(db, "stores", id), {
+        ...storeData,
+        updatedAt: Timestamp.now(),
+      });
+    } catch (error) {
+      console.error("Error updating store:", error);
+      throw error;
+    }
+  };
+
+  // Delete store
+  const deleteStore = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "stores", id));
+    } catch (error) {
+      console.error("Error deleting store:", error);
+      throw error;
+    }
+  };
+
   // Calculate financial summary
   const calculateFinancialSummary = (): FinancialSummary => {
-    const storesMap = new Map<string, Store>();
+    const storesMap = new Map<string, StoreSummary>();
 
     transactions.forEach((transaction) => {
       const storeName = transaction.storeName;
@@ -123,9 +187,13 @@ export const useFirestore = () => {
 
   return {
     transactions,
+    stores,
     loading,
     addTransaction,
     deleteTransaction,
+    addStore,
+    updateStore,
+    deleteStore,
     calculateFinancialSummary,
     getStoreNames,
   };

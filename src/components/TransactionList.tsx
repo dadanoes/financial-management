@@ -1,13 +1,5 @@
 import React, { useState } from "react";
 import { Transaction } from "../types";
-import {
-  TrashIcon,
-  EyeIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  CalendarIcon,
-  BuildingStorefrontIcon,
-} from "@heroicons/react/24/outline";
 
 interface Props {
   transactions: Transaction[];
@@ -50,18 +42,23 @@ const TransactionList: React.FC<Props> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Daftar Transaksi</h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+          <span className="text-purple-600 font-bold">📋</span>
+        </div>
+        Daftar Transaksi
+      </h2>
 
       {/* Filter */}
-      <div className="mb-4 flex flex-col md:flex-row gap-4">
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Filter Toko
+          <label className="block text-sm font-bold text-gray-700 mb-2">
+            🏪 Filter Toko
           </label>
           <select
             value={filterStore}
             onChange={(e) => setFilterStore(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-select"
           >
             <option value="">Semua Toko</option>
             {stores.map((store) => (
@@ -73,71 +70,75 @@ const TransactionList: React.FC<Props> = ({
         </div>
 
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Filter Jenis
+          <label className="block text-sm font-bold text-gray-700 mb-2">
+            📊 Filter Jenis
           </label>
           <select
             value={filterType}
             onChange={(e) =>
               setFilterType(e.target.value as "all" | "income" | "expense")
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="form-select"
           >
             <option value="all">Semua Transaksi</option>
-            <option value="income">Pemasukan</option>
-            <option value="expense">Pengeluaran</option>
+            <option value="income">💰 Pemasukan</option>
+            <option value="expense">💸 Pengeluaran</option>
           </select>
         </div>
       </div>
 
       {/* Transaction List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {filteredTransactions.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            Tidak ada transaksi yang ditemukan
+          <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300">
+            <div className="text-6xl mb-4">📭</div>
+            <p className="text-gray-500 text-lg font-medium">
+              Tidak ada transaksi yang ditemukan
+            </p>
+            <p className="text-gray-400 text-sm">
+              Coba ubah filter atau tambah transaksi baru
+            </p>
           </div>
         ) : (
           filteredTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:scale-105"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-4">
                   <div
-                    className={`p-2 rounded-full ${
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       transaction.type === "income"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-600"
+                        ? "bg-green-500 text-white"
+                        : "bg-red-500 text-white"
                     }`}
                   >
-                    {transaction.type === "income" ? (
-                      <ArrowUpIcon className="h-5 w-5" />
-                    ) : (
-                      <ArrowDownIcon className="h-5 w-5" />
-                    )}
+                    <span className="text-xl">
+                      {transaction.type === "income" ? "📈" : "📉"}
+                    </span>
                   </div>
 
                   <div>
-                    <div className="flex items-center space-x-2">
-                      <BuildingStorefrontIcon className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium text-gray-800">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="text-sm text-gray-500">🏪</span>
+                      <span className="font-bold text-gray-800">
                         {transaction.storeName}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-gray-700 font-medium mb-1">
                       {transaction.description}
                     </p>
                     <div className="flex items-center space-x-2 text-xs text-gray-500">
-                      <CalendarIcon className="h-3 w-3" />
+                      <span>📅</span>
                       <span>{formatDate(transaction.date)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
                   <span
-                    className={`font-bold text-lg ${
+                    className={`font-bold text-xl ${
                       transaction.type === "income"
                         ? "text-green-600"
                         : "text-red-600"
@@ -147,20 +148,20 @@ const TransactionList: React.FC<Props> = ({
                     {transaction.amount.toLocaleString("id-ID")}
                   </span>
 
-                  <div className="flex space-x-1">
+                  <div className="flex space-x-2">
                     <button
                       onClick={() => setSelectedTransaction(transaction)}
-                      className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                      className="w-10 h-10 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors"
                       title="Lihat Detail"
                     >
-                      <EyeIcon className="h-4 w-4" />
+                      👁️
                     </button>
                     <button
                       onClick={() => handleDelete(transaction.id)}
-                      className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                      className="w-10 h-10 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
                       title="Hapus Transaksi"
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      🗑️
                     </button>
                   </div>
                 </div>
@@ -173,83 +174,99 @@ const TransactionList: React.FC<Props> = ({
       {/* Transaction Detail Modal */}
       {selectedTransaction && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Detail Transaksi
-            </h3>
+          <div className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-800">
+                Detail Transaksi
+              </h3>
+              <button
+                onClick={() => setSelectedTransaction(null)}
+                className="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center transition-colors"
+              >
+                ✕
+              </button>
+            </div>
 
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Toko
-                </label>
-                <p className="text-gray-800">{selectedTransaction.storeName}</p>
+            <div className="space-y-4">
+              <div className="flex items-center p-3 bg-blue-50 rounded-lg">
+                <span className="text-blue-600 mr-3">🏪</span>
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Toko
+                  </label>
+                  <p className="text-gray-800 font-medium">
+                    {selectedTransaction.storeName}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Jenis Transaksi
-                </label>
-                <p
-                  className={`font-medium ${
-                    selectedTransaction.type === "income"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {selectedTransaction.type === "income"
-                    ? "Pemasukan"
-                    : "Pengeluaran"}
-                </p>
+              <div className="flex items-center p-3 bg-purple-50 rounded-lg">
+                <span className="text-purple-600 mr-3">📊</span>
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Jenis Transaksi
+                  </label>
+                  <p
+                    className={`font-bold ${
+                      selectedTransaction.type === "income"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {selectedTransaction.type === "income"
+                      ? "💰 Pemasukan"
+                      : "💸 Pengeluaran"}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Jumlah
-                </label>
-                <p
-                  className={`text-lg font-bold ${
-                    selectedTransaction.type === "income"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  Rp {selectedTransaction.amount.toLocaleString("id-ID")}
-                </p>
+              <div className="flex items-center p-3 bg-green-50 rounded-lg">
+                <span className="text-green-600 mr-3">💰</span>
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Jumlah
+                  </label>
+                  <p
+                    className={`text-xl font-bold ${
+                      selectedTransaction.type === "income"
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    Rp {selectedTransaction.amount.toLocaleString("id-ID")}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Deskripsi
-                </label>
-                <p className="text-gray-800">
-                  {selectedTransaction.description}
-                </p>
+              <div className="flex items-center p-3 bg-yellow-50 rounded-lg">
+                <span className="text-yellow-600 mr-3">📝</span>
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Deskripsi
+                  </label>
+                  <p className="text-gray-800">
+                    {selectedTransaction.description}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Tanggal
-                </label>
-                <p className="text-gray-800">
-                  {formatDate(selectedTransaction.date)}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Tanggal Dibuat
-                </label>
-                <p className="text-gray-800">
-                  {formatDate(selectedTransaction.createdAt)}
-                </p>
+              <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 mr-3">📅</span>
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Tanggal
+                  </label>
+                  <p className="text-gray-800">
+                    {formatDate(selectedTransaction.date)}
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="mt-8 flex justify-end">
               <button
                 onClick={() => setSelectedTransaction(null)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                className="btn btn-gray"
               >
                 Tutup
               </button>

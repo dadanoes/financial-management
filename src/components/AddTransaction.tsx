@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Transaction } from "../types";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { Transaction, Store } from "../types";
 
 interface Props {
   onAddTransaction: (
     transaction: Omit<Transaction, "id" | "createdAt">
   ) => void;
-  stores: string[];
+  stores: Store[];
 }
 
 const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
@@ -63,67 +62,84 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">Tambah Transaksi</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center">
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+            <span className="text-green-600 font-bold">➕</span>
+          </div>
+          Tambah Transaksi
+        </h2>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+          className="btn btn-blue flex items-center"
         >
-          <PlusIcon className="h-5 w-5 mr-2" />
+          <span className="mr-2">{isOpen ? "✕" : "➕"}</span>
           {isOpen ? "Tutup" : "Tambah Transaksi"}
         </button>
       </div>
 
       {isOpen && (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 bg-gradient-to-br from-blue-50 to-white rounded-xl p-6 border border-blue-200"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nama Toko
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                🏪 Pilih Toko *
               </label>
-              <select
-                name="storeName"
-                value={formData.storeName}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Pilih Toko</option>
-                {stores.map((store) => (
-                  <option key={store} value={store}>
-                    {store}
-                  </option>
-                ))}
-              </select>
+              {stores.length === 0 ? (
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800 text-sm">
+                    ⚠️ Belum ada toko yang ditambahkan. Silakan tambah toko
+                    terlebih dahulu di menu "Kelola Toko".
+                  </p>
+                </div>
+              ) : (
+                <select
+                  name="storeName"
+                  value={formData.storeName}
+                  onChange={handleInputChange}
+                  className="form-select"
+                  required
+                >
+                  <option value="">Pilih Toko</option>
+                  {stores.map((store) => (
+                    <option key={store.id} value={store.name}>
+                      {store.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Jenis Transaksi
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                📊 Jenis Transaksi
               </label>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-select"
               >
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
+                <option value="income">💰 Pemasukan</option>
+                <option value="expense">💸 Pengeluaran</option>
               </select>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Jumlah (Rp)
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                💰 Jumlah (Rp)
               </label>
               <input
                 type="number"
                 name="amount"
                 value={formData.amount}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
                 placeholder="0"
                 min="0"
                 step="1000"
@@ -132,48 +148,49 @@ const AddTransaction: React.FC<Props> = ({ onAddTransaction, stores }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tanggal
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                📅 Tanggal
               </label>
               <input
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="form-input"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Deskripsi
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              📝 Deskripsi
             </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-textarea"
               rows={3}
               placeholder="Masukkan deskripsi transaksi..."
               required
             />
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="btn btn-gray"
             >
-              Batal
+              ❌ Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="btn btn-blue"
+              disabled={stores.length === 0}
             >
-              Simpan Transaksi
+              💾 Simpan Transaksi
             </button>
           </div>
         </form>
