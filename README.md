@@ -2,6 +2,8 @@
 
 Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan.
 
+##### TEST
+
 ## 📋 Update Terbaru (v2.0)
 
 ### ✅ Perubahan yang Telah Dilakukan:
