@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "./components/Header";
 import FinancialSummary from "./components/FinancialSummary";
 import AddTransaction from "./components/AddTransaction";
@@ -29,30 +29,16 @@ function App() {
     updateStore,
     deleteStore,
     calculateFinancialSummary,
-    ensureAdminTokoStore,
   } = useFirestore();
 
   const handleLogin = (username: string, password: string): boolean => {
     const success = login(username, password);
-
-    // Jika admin toko berhasil login, pastikan tokonya ada
-    if (success && username === "admintoko") {
-      ensureAdminTokoStore();
-    }
-
     return success;
   };
 
   const handleLogout = () => {
     logout();
   };
-
-  // Ensure admin toko store exists when component mounts
-  useEffect(() => {
-    if (level === "admintoko" && userStore) {
-      ensureAdminTokoStore();
-    }
-  }, [level, userStore, ensureAdminTokoStore]);
 
   const handleAddTransaction = async (transactionData: any) => {
     try {
@@ -179,8 +165,12 @@ function App() {
               summary={financialSummary}
               level={level}
               userStore={userStore}
-              transactions={transactions}
             />
+
+            {/* Sample Data Button */}
+            {transactions.length === 0 && stores.length > 0 && (
+              <SampleDataButton onAddTransactions={handleAddSampleData} />
+            )}
 
             {/* Add Transaction */}
             <AddTransaction
@@ -221,11 +211,7 @@ function App() {
             {activeTab === "dashboard" && (
               <div className="space-y-8">
                 {/* Financial Summary */}
-                <FinancialSummary
-                  summary={financialSummary}
-                  level={level}
-                  transactions={transactions}
-                />
+                <FinancialSummary summary={financialSummary} level={level} />
 
                 {/* Sample Data Button */}
                 {transactions.length === 0 && stores.length > 0 && (

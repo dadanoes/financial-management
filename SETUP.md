@@ -1,5 +1,21 @@
 # Panduan Setup Aplikasi Manajemen Keuangan Toko
 
+## 📋 Update Terbaru (v2.0)
+
+### ✅ Perubahan yang Telah Dilakukan:
+
+1. **Penghapusan Section "Ringkasan Toko Anda"** untuk admin toko
+2. **Perbaikan Riwayat Transaksi** - Admin toko dapat melihat semua transaksi dengan kolom toko
+3. **Optimasi Performa** - Menghapus kode yang tidak digunakan
+4. **Perbaikan UI/UX** - Tampilan yang lebih bersih untuk admin toko
+
+### 🔧 Fitur yang Diperbaiki:
+
+- Admin toko tidak lagi melihat section "Ringkasan Toko Anda"
+- Riwayat transaksi admin toko menampilkan semua transaksi dari semua toko
+- Ditambahkan kolom "Toko" di tabel riwayat transaksi
+- Sample data button tersedia untuk admin toko
+
 ## Langkah 1: Setup Firebase
 
 ### 1.1 Buat Project Firebase
@@ -76,6 +92,11 @@ Aplikasi akan berjalan di `http://localhost:3000`
 
 ## Troubleshooting
 
+### Error: "npm start tidak berjalan"
+
+- Pastikan Anda berada di direktori yang benar: `cd financial-management-app`
+- Jalankan `npm start` dari direktori project, bukan dari parent directory
+
 ### Error: "Firebase: Error (auth/unauthorized-domain)"
 
 - Pastikan domain Anda sudah ditambahkan di Firebase Console > Authentication > Settings > Authorized domains
@@ -146,14 +167,40 @@ service cloud.firestore {
 3. Tambahkan environment variables di Netlify dashboard
 4. Deploy
 
+## Fitur yang Sudah Diimplementasi
+
+### ✅ Fitur Utama
+
+1. **Multi-Level Authentication**: Login untuk admin utama dan admin toko
+2. **Financial Analytics**: Grafik keuangan dengan analisis per periode
+3. **Store Management**: CRUD operations untuk manajemen toko
+4. **Transaction Management**: Pencatatan dan manajemen transaksi
+5. **Real-time Data**: Data terupdate secara otomatis dengan Firebase
+6. **Responsive Design**: Optimal untuk desktop, tablet, dan mobile
+
+### ✅ Fitur Admin Utama
+
+1. **Dashboard Lengkap**: Ringkasan keuangan konsolidasi dan per toko
+2. **Analisis Keuangan**: Grafik dan laporan per periode (harian, mingguan, bulanan, tahunan)
+3. **Manajemen Toko**: Tambah, edit, hapus toko
+4. **Manajemen Transaksi**: Tambah, hapus, dan lihat semua transaksi
+5. **Sample Data**: Button untuk menambah data contoh
+
+### ✅ Fitur Admin Toko
+
+1. **Dashboard Terbatas**: Ringkasan keuangan konsolidasi
+2. **Tambah Transaksi**: Form untuk menambah transaksi baru
+3. **Riwayat Transaksi**: Lihat semua transaksi dengan filter dan sorting
+4. **Sample Data**: Button untuk menambah data contoh
+
 ## Fitur Tambahan yang Bisa Dikembangkan
 
-1. **Authentication**: Login/logout untuk multiple user
-2. **Export Data**: Export ke Excel/PDF
-3. **Charts**: Grafik keuangan dengan Chart.js
-4. **Notifications**: Notifikasi untuk transaksi besar
-5. **Backup**: Auto backup ke Google Drive
-6. **API Integration**: Integrasi dengan aplikasi kasir online
+1. **Export Data**: Export ke Excel/PDF
+2. **Notifications**: Notifikasi untuk transaksi besar
+3. **Backup**: Auto backup ke Google Drive
+4. **API Integration**: Integrasi dengan aplikasi kasir online
+5. **Advanced Analytics**: Machine learning untuk prediksi keuangan
+6. **Multi-currency**: Support untuk berbagai mata uang
 
 ## Support
 

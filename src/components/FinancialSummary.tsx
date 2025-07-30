@@ -1,45 +1,17 @@
-import React, { useMemo } from "react";
-import {
-  FinancialSummary as FinancialSummaryType,
-  Transaction,
-} from "../types";
+import React from "react";
+import { FinancialSummary as FinancialSummaryType } from "../types";
 
 interface Props {
   summary: FinancialSummaryType;
   level?: "admin" | "admintoko" | null;
   userStore?: string; // Untuk admin toko, nama tokonya
-  transactions?: Transaction[]; // Untuk menghitung total admin toko
 }
 
 const FinancialSummary: React.FC<Props> = ({
   summary,
   level = "admin",
   userStore,
-  transactions = [],
 }) => {
-  // Hitung total untuk admin toko berdasarkan transaksi mereka
-  const adminTokoSummary = useMemo(() => {
-    if (level !== "admintoko" || !userStore) return null;
-
-    const userTransactions = transactions.filter(
-      (t) => t.storeName === userStore
-    );
-    const totalIncome = userTransactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + t.amount, 0);
-    const totalExpense = userTransactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + t.amount, 0);
-    const balance = totalIncome - totalExpense;
-
-    return {
-      name: userStore,
-      totalIncome,
-      totalExpense,
-      balance,
-    };
-  }, [level, userStore, transactions]);
-
   // Filter stores untuk admin toko (hanya toko mereka)
   const filteredStores =
     level === "admintoko" && userStore
@@ -113,57 +85,16 @@ const FinancialSummary: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Ringkasan Toko - Untuk Admin Utama (semua toko) atau Admin Toko (tokonya saja) */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
-          <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-            <span className="text-purple-600 text-sm">🏪</span>
-          </div>
-          {level === "admintoko" ? "Ringkasan Toko Anda" : "Ringkasan Per Toko"}
-        </h3>
-
-        {level === "admintoko" && adminTokoSummary ? (
-          // Tampilan khusus untuk admin toko - berdasarkan transaksi mereka
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:scale-105">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                  <span className="text-white font-bold text-sm">🏪</span>
-                </div>
-                <h4 className="font-bold text-gray-800 text-lg">
-                  {adminTokoSummary.name}
-                </h4>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                  <span className="text-green-700 font-medium">Pemasukan:</span>
-                  <span className="font-bold text-green-800">
-                    Rp {adminTokoSummary.totalIncome.toLocaleString("id-ID")}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                  <span className="text-red-700 font-medium">Pengeluaran:</span>
-                  <span className="font-bold text-red-800">
-                    Rp {adminTokoSummary.totalExpense.toLocaleString("id-ID")}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-t-2 border-blue-200">
-                  <span className="font-bold text-gray-800">Saldo:</span>
-                  <span
-                    className={`font-bold text-lg ${
-                      adminTokoSummary.balance >= 0
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    Rp {adminTokoSummary.balance.toLocaleString("id-ID")}
-                  </span>
-                </div>
-              </div>
+      {/* Ringkasan Toko - Hanya untuk Admin Utama */}
+      {level === "admin" && (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+            <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+              <span className="text-purple-600 text-sm">🏪</span>
             </div>
-          </div>
-        ) : (
-          // Tampilan untuk admin utama - semua toko
+            Ringkasan Per Toko
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredStores.map((store) => (
               <div
@@ -209,8 +140,8 @@ const FinancialSummary: React.FC<Props> = ({
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

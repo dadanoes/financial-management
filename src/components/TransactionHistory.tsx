@@ -12,13 +12,10 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
   const [sortBy, setSortBy] = useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Filter transaksi untuk admin toko (hanya tokonya)
+  // Filter transaksi untuk admin toko (semua toko tersedia)
   const filteredTransactions = useMemo(() => {
     let filtered = transactions.filter((transaction) => {
-      // Filter berdasarkan toko
-      if (userStore && transaction.storeName !== userStore) {
-        return false;
-      }
+      // Admin toko dapat melihat semua transaksi dari semua toko
 
       // Filter berdasarkan jenis transaksi
       if (selectedType !== "all" && transaction.type !== selectedType) {
@@ -178,6 +175,7 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
               >
                 Tanggal {getSortIcon("date")}
               </th>
+              <th>Toko</th>
               <th>Jenis</th>
               <th
                 className="sortable-header"
@@ -191,7 +189,7 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
           <tbody>
             {filteredTransactions.length === 0 ? (
               <tr>
-                <td colSpan={4} className="empty-message">
+                <td colSpan={5} className="empty-message">
                   <div className="empty-state">
                     <span className="empty-icon">📝</span>
                     <p>Tidak ada transaksi yang ditemukan</p>
@@ -202,6 +200,11 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
               filteredTransactions.map((transaction) => (
                 <tr key={transaction.id} className="transaction-row">
                   <td className="date-cell">{formatDate(transaction.date)}</td>
+                  <td className="store-cell">
+                    <span className="store-badge">
+                      🏪 {transaction.storeName}
+                    </span>
+                  </td>
                   <td className="type-cell">
                     <span
                       className={`type-badge ${

@@ -134,28 +134,6 @@ export const useFirestore = () => {
     }
   };
 
-  // Ensure admin toko store exists
-  const ensureAdminTokoStore = async () => {
-    const adminTokoStoreName = "Toko Admin";
-    const existingStore = stores.find(
-      (store) => store.name === adminTokoStoreName
-    );
-
-    if (!existingStore) {
-      try {
-        await addStore({
-          name: adminTokoStoreName,
-          description: "Toko untuk Admin Toko",
-          address: "Alamat Toko Admin",
-          phone: "08123456789",
-        });
-        console.log("Admin toko store created successfully");
-      } catch (error) {
-        console.error("Error creating admin toko store:", error);
-      }
-    }
-  };
-
   // Get stores for admin toko
   const getStoresForAdminToko = () => {
     // Admin toko dapat melihat semua toko yang tersedia
@@ -226,7 +204,6 @@ export const useFirestore = () => {
     deleteStore,
     calculateFinancialSummary,
     getStoreNames,
-    ensureAdminTokoStore,
     getStoresForAdminToko,
   };
 };

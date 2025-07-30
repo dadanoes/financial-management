@@ -2,6 +2,22 @@
 
 Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan.
 
+## 📋 Update Terbaru (v2.0)
+
+### ✅ Perubahan yang Telah Dilakukan:
+
+1. **Penghapusan Section "Ringkasan Toko Anda"** untuk admin toko
+2. **Perbaikan Riwayat Transaksi** - Admin toko dapat melihat semua transaksi dengan kolom toko
+3. **Optimasi Performa** - Menghapus kode yang tidak digunakan
+4. **Perbaikan UI/UX** - Tampilan yang lebih bersih untuk admin toko
+
+### 🔧 Fitur yang Diperbaiki:
+
+- Admin toko tidak lagi melihat section "Ringkasan Toko Anda"
+- Riwayat transaksi admin toko menampilkan semua transaksi dari semua toko
+- Ditambahkan kolom "Toko" di tabel riwayat transaksi
+- Sample data button tersedia untuk admin toko
+
 ## ✨ Fitur Utama
 
 ### 🔐 Sistem Autentikasi Multi-Level
@@ -17,12 +33,12 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
   - Username: `admintoko`
   - Password: `admintoko`
   - Akses terbatas untuk operasi harian
-  - Hanya dapat menambah transaksi dan melihat ringkasan keuangan
+  - Dapat menambah transaksi dan melihat riwayat transaksi dari semua toko
 
 ### 📊 Dashboard Keuangan
 
-- **Ringkasan Keuangan Per Toko**: Tampilkan total pemasukan, total pengeluaran, dan saldo bersih untuk setiap toko secara individual
-- **Ringkasan Keuangan Konsolidasi**: Sediakan tampilan ringkasan total pemasukan, pengeluaran, dan saldo bersih untuk semua toko secara keseluruhan
+- **Ringkasan Keuangan Konsolidasi** (Admin Utama): Tampilkan total pemasukan, total pengeluaran, dan saldo bersih untuk semua toko secara keseluruhan
+- **Ringkasan Per Toko** (Admin Utama): Tampilkan total pemasukan, total pengeluaran, dan saldo bersih untuk setiap toko secara individual
 - **Statistik Visual**: Grafik dan indikator visual untuk analisis keuangan yang lebih mudah
 
 ### 📈 Analisis Keuangan (Admin Utama)
@@ -38,7 +54,7 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
   - **Bulanan**: 12 bulan terakhir
   - **Tahunan**: 5 tahun terakhir
 
-### 🏪 Manajemen Toko
+### 🏪 Manajemen Toko (Admin Utama)
 
 - **Tambah Toko Baru**: Tambahkan toko baru dengan informasi lengkap (nama, deskripsi, alamat, telepon)
 - **Edit Informasi Toko**: Update data toko yang sudah ada
@@ -54,7 +70,7 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
   - Jenis transaksi (pemasukan/pengeluaran)
   - Deskripsi transaksi
   - Tanggal transaksi
-- **Daftar Transaksi**: Tampilkan daftar semua transaksi yang tercatat
+- **Riwayat Transaksi**: Tampilkan daftar semua transaksi dengan filter dan sorting
 - **Filter dan Pencarian**: Cari dan filter transaksi berdasarkan berbagai kriteria
 - **Hapus Transaksi**: Hapus transaksi yang tidak diperlukan (Admin Utama)
 
@@ -125,7 +141,8 @@ financial-management-app/
 │   │   ├── FinancialSummary.tsx     # Ringkasan keuangan per toko dan total
 │   │   ├── FinancialAnalytics.tsx   # Analisis keuangan dengan grafik per periode
 │   │   ├── AddTransaction.tsx       # Form untuk menambah transaksi
-│   │   ├── TransactionList.tsx      # Daftar dan manajemen transaksi
+│   │   ├── TransactionList.tsx      # Daftar dan manajemen transaksi (Admin Utama)
+│   │   ├── TransactionHistory.tsx   # Riwayat transaksi dengan filter (Admin Toko)
 │   │   ├── StoreManager.tsx         # Manajemen toko (CRUD operations)
 │   │   ├── LoadingSpinner.tsx       # Komponen loading spinner
 │   │   └── SampleDataButton.tsx     # Button untuk menambah data sample
@@ -169,7 +186,8 @@ financial-management-app/
 - **Login.tsx**: Form login dengan validasi dan level admin selection
 - **FinancialSummary.tsx**: Dashboard ringkasan keuangan dengan cards dan stats
 - **AddTransaction.tsx**: Form untuk menambah transaksi baru
-- **TransactionList.tsx**: Tabel/list transaksi dengan filter dan actions
+- **TransactionList.tsx**: Tabel/list transaksi dengan filter dan actions (Admin Utama)
+- **TransactionHistory.tsx**: Riwayat transaksi dengan filter dan sorting (Admin Toko)
 - **StoreManager.tsx**: CRUD operations untuk manajemen toko
 - **LoadingSpinner.tsx**: Komponen loading dengan animasi
 - **SampleDataButton.tsx**: Button untuk menambah data testing
@@ -281,11 +299,16 @@ App.tsx
         │   ├── FinancialSummary.tsx
         │   ├── SampleDataButton.tsx
         │   ├── AddTransaction.tsx
-        │   └── TransactionList.tsx
+        │   └── TransactionList.tsx (Admin only)
         ├── Analytics Tab (Admin only)
         │   └── FinancialAnalytics.tsx
         └── Stores Tab (Admin only)
             └── StoreManager.tsx
+        └── Admin Toko Dashboard
+            ├── FinancialSummary.tsx
+            ├── SampleDataButton.tsx
+            ├── AddTransaction.tsx
+            └── TransactionHistory.tsx
 ```
 
 ### 🎯 Key Features by File
@@ -298,8 +321,9 @@ App.tsx
 | `FinancialSummary.tsx`   | Financial dashboard    | Store summaries, total calculations               |
 | `FinancialAnalytics.tsx` | Financial analytics    | Period-based analysis, charts, data visualization |
 | `AddTransaction.tsx`     | Transaction creation   | Form validation, store selection                  |
-| `TransactionList.tsx`    | Transaction management | Filtering, deletion, modal details                |
-| `StoreManager.tsx`       | Store CRUD operations  | Add, edit, delete stores                          |
+| `TransactionList.tsx`    | Transaction management | Filtering, deletion, modal details (Admin only)   |
+| `TransactionHistory.tsx` | Transaction history    | Filtering, sorting, store display (Admin Toko)    |
+| `StoreManager.tsx`       | Store CRUD operations  | Add, edit, delete stores (Admin only)             |
 | `useFirestore.ts`        | Database operations    | Real-time data, CRUD functions                    |
 | `useAuth.ts`             | Authentication logic   | Login/logout, level management                    |
 
@@ -359,17 +383,21 @@ App.tsx
 - ✅ Kelola toko (tambah, edit, hapus)
 - ✅ Tambah transaksi
 - ✅ Lihat dan hapus transaksi
-- ✅ Lihat ringkasan keuangan
+- ✅ Lihat ringkasan keuangan konsolidasi
+- ✅ Lihat ringkasan per toko
 - ✅ Analisis keuangan dengan grafik (harian, mingguan, bulanan, tahunan)
 - ✅ Akses data sample
 
 ### Admin Toko (admintoko/admintoko)
 
-- ✅ Lihat ringkasan keuangan
+- ✅ Lihat ringkasan keuangan konsolidasi
 - ✅ Tambah transaksi
-- ❌ Lihat daftar transaksi
+- ✅ Lihat riwayat transaksi dari semua toko
+- ✅ Filter dan sort transaksi
+- ✅ Akses data sample
 - ❌ Kelola toko
 - ❌ Hapus transaksi
+- ❌ Analisis keuangan detail
 
 ## 📱 Responsivitas
 
