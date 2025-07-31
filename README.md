@@ -1,6 +1,6 @@
 # 🏪 Aplikasi Manajemen Keuangan Toko Terpusat
 
-Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan.
+Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan dengan teknologi modern.
 
 ## ✨ Fitur Utama
 
@@ -25,10 +25,13 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 - **Ringkasan Per Toko** (Admin Utama): Tampilkan total pemasukan, total pengeluaran, dan saldo bersih untuk setiap toko secara individual
 - **Statistik Visual**: Grafik dan indikator visual untuk analisis keuangan yang lebih mudah
 
-### 📈 Analisis Keuangan (Admin Utama)
+### 📈 Analisis Keuangan Modern (Admin Utama)
 
+- **Grafik Interaktif Modern**:
+  - **Bar Chart**: Grafik batang dengan rounded corners dan gradient colors
+  - **Line Chart**: Grafik garis dengan smooth curves dan filled areas
+  - **Doughnut Chart**: Grafik donat untuk overview total
 - **Laporan Per Periode**: Analisis pemasukan dan pengeluaran per hari, minggu, bulan, dan tahun
-- **Grafik Interaktif**: Visualisasi data dengan grafik bar yang responsif dan mudah dipahami
 - **Filter Data**: Pilihan untuk melihat pemasukan saja, pengeluaran saja, atau keduanya
 - **Ringkasan Total**: Card yang menampilkan total pemasukan, pengeluaran, dan saldo bersih
 - **Tabel Detail**: Tabel data lengkap dengan format currency Indonesia
@@ -48,22 +51,25 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 ### 💰 Manajemen Transaksi
 
 - **Pencatatan Transaksi Manual**: Tambahkan transaksi pemasukan dan pengeluaran secara manual
+- **Waktu Input Real-time**: Transaksi disimpan dengan waktu input yang sebenarnya
 - **Detail Transaksi Lengkap**:
   - Nama toko
   - Jumlah transaksi
   - Jenis transaksi (pemasukan/pengeluaran)
   - Deskripsi transaksi
-  - Tanggal transaksi
-- **Riwayat Transaksi**: Tampilkan daftar semua transaksi dengan filter dan sorting
+  - Tanggal dan waktu transaksi
+- **Riwayat Transaksi dengan Scrolling**: Tampilkan daftar semua transaksi dengan scrolling yang smooth
 - **Filter dan Pencarian**: Cari dan filter transaksi berdasarkan berbagai kriteria
 - **Hapus Transaksi**: Hapus transaksi yang tidak diperlukan (Admin Utama)
+- **Export PDF**: Download data transaksi dalam format PDF
 
 ### 📱 Responsif dan User-Friendly
 
 - **Desain Responsif**: Optimal untuk desktop, tablet, dan mobile
-- **Interface Modern**: Desain yang menarik dengan animasi dan efek visual
+- **Interface Modern**: Desain yang menarik dengan Tailwind CSS
 - **Navigasi Intuitif**: Menu dan navigasi yang mudah dipahami
 - **Loading States**: Indikator loading untuk pengalaman yang lebih baik
+- **Mobile-First Design**: Optimized untuk penggunaan mobile
 
 ### 🔒 Keamanan dan Privasi
 
@@ -78,8 +84,9 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 
 - **React.js 18**: Framework JavaScript untuk membangun user interface yang interaktif
 - **TypeScript**: Bahasa pemrograman yang menambahkan type safety pada JavaScript
-- **CSS3**: Styling modern dengan custom CSS dan utility classes
-- **Responsive Design**: Mobile-first approach dengan media queries
+- **Tailwind CSS**: Utility-first CSS framework untuk styling modern
+- **Chart.js & react-chartjs-2**: Library untuk grafik interaktif dan modern
+- **Responsive Design**: Mobile-first approach dengan Tailwind breakpoints
 
 ### Backend & Database
 
@@ -96,9 +103,9 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 
 ### Styling & UI/UX
 
-- **Custom CSS**: Styling yang dibuat khusus untuk aplikasi
-- **CSS Grid & Flexbox**: Layout system modern
-- **CSS Animations**: Animasi smooth untuk user experience yang lebih baik
+- **Tailwind CSS**: Utility-first CSS framework dengan custom configuration
+- **Custom Theme**: Extended color palette dan animations
+- **Modern Charts**: Interactive charts dengan smooth animations
 - **Gradient Backgrounds**: Visual design yang menarik
 - **Glassmorphism Effects**: Efek visual modern dengan backdrop blur
 
@@ -123,7 +130,7 @@ financial-management-app/
 │   │   ├── Header.tsx               # Header dengan info user dan level admin
 │   │   ├── Login.tsx                # Halaman login dengan form autentikasi
 │   │   ├── FinancialSummary.tsx     # Ringkasan keuangan per toko dan total
-│   │   ├── FinancialAnalytics.tsx   # Analisis keuangan dengan grafik per periode
+│   │   ├── FinancialAnalytics.tsx   # Analisis keuangan dengan grafik modern
 │   │   ├── AddTransaction.tsx       # Form untuk menambah transaksi
 │   │   ├── TransactionList.tsx      # Daftar dan manajemen transaksi (Admin Utama)
 │   │   ├── TransactionHistory.tsx   # Riwayat transaksi dengan filter (Admin Toko)
@@ -143,15 +150,18 @@ financial-management-app/
 │   │
 │   ├── App.tsx                      # Komponen utama aplikasi (root component)
 │   ├── index.tsx                    # Entry point aplikasi
-│   ├── index.css                    # Global CSS styles dan utility classes
+│   ├── index.css                    # Global CSS styles dengan Tailwind directives
 │   └── firebase.ts                  # Konfigurasi Firebase dan Firestore
 │
 ├── .env                             # Environment variables (Firebase config)
 ├── .gitignore                       # Git ignore rules
 ├── package.json                     # Dependencies dan scripts
 ├── tsconfig.json                    # TypeScript configuration
+├── tailwind.config.js               # Tailwind CSS configuration
+├── postcss.config.js                # PostCSS configuration
 ├── README.md                        # Dokumentasi utama project
 ├── SETUP.md                         # Panduan setup dan konfigurasi
+├── TAILWIND_GUIDE.md                # Panduan penggunaan Tailwind CSS
 └── FINAL_SUMMARY.md                 # Ringkasan fitur dan teknologi
 ```
 
@@ -169,9 +179,10 @@ financial-management-app/
 - **Header.tsx**: Header aplikasi dengan logo, user info, dan logout button
 - **Login.tsx**: Form login dengan validasi dan level admin selection
 - **FinancialSummary.tsx**: Dashboard ringkasan keuangan dengan cards dan stats
-- **AddTransaction.tsx**: Form untuk menambah transaksi baru
-- **TransactionList.tsx**: Tabel/list transaksi dengan filter dan actions (Admin Utama)
-- **TransactionHistory.tsx**: Riwayat transaksi dengan filter dan sorting (Admin Toko)
+- **FinancialAnalytics.tsx**: Analisis keuangan dengan grafik modern (Chart.js)
+- **AddTransaction.tsx**: Form untuk menambah transaksi baru dengan auto-update date
+- **TransactionList.tsx**: Tabel/list transaksi dengan filter, scrolling, dan actions (Admin Utama)
+- **TransactionHistory.tsx**: Riwayat transaksi dengan filter, sorting, dan scrolling (Admin Toko)
 - **StoreManager.tsx**: CRUD operations untuk manajemen toko
 - **LoadingSpinner.tsx**: Komponen loading dengan animasi
 - **SampleDataButton.tsx**: Button untuk menambah data testing
@@ -193,14 +204,13 @@ financial-management-app/
 
 - **sampleData.ts**: Data dummy untuk testing dan demo aplikasi
 
-#### **Root Files**
+#### **Configuration Files**
 
+- **tailwind.config.js**: Konfigurasi Tailwind CSS dengan custom theme
+- **postcss.config.js**: Konfigurasi PostCSS untuk Tailwind
 - **.env**: Environment variables untuk Firebase configuration
 - **package.json**: Dependencies, scripts, dan metadata project
 - **tsconfig.json**: Konfigurasi TypeScript compiler
-- **README.md**: Dokumentasi lengkap aplikasi
-- **SETUP.md**: Panduan setup dan troubleshooting
-- **FINAL_SUMMARY.md**: Ringkasan fitur dan teknologi yang digunakan
 
 ### 🔧 Konfigurasi Files
 
@@ -212,14 +222,53 @@ financial-management-app/
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "firebase": "^10.x.x",
-    "typescript": "^4.x.x"
+    "typescript": "^4.x.x",
+    "chart.js": "^4.x.x",
+    "react-chartjs-2": "^5.x.x",
+    "jspdf": "^2.x.x",
+    "jspdf-autotable": "^3.x.x"
   },
   "devDependencies": {
     "@types/react": "^18.x.x",
     "@types/react-dom": "^18.x.x",
+    "tailwindcss": "^3.x.x",
+    "postcss": "^8.x.x",
+    "autoprefixer": "^10.x.x",
     "eslint": "^8.x.x"
   }
 }
+```
+
+#### **tailwind.config.js**
+
+```javascript
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          // custom colors
+        },
+        success: {
+          // success colors
+        },
+        danger: {
+          // danger colors
+        },
+        warning: {
+          // warning colors
+        },
+      },
+      animation: {
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "slide-up": "slideUp 0.3s ease-out",
+        "bounce-gentle": "bounceGentle 2s infinite",
+      },
+    },
+  },
+  plugins: [],
+};
 ```
 
 #### **tsconfig.json**
@@ -297,19 +346,19 @@ App.tsx
 
 ### 🎯 Key Features by File
 
-| File                     | Primary Function       | Key Features                                      |
-| ------------------------ | ---------------------- | ------------------------------------------------- |
-| `App.tsx`                | Main orchestrator      | Authentication routing, tab management            |
-| `Login.tsx`              | User authentication    | Multi-level login, form validation                |
-| `Header.tsx`             | Navigation & user info | User avatar, level display, logout                |
-| `FinancialSummary.tsx`   | Financial dashboard    | Store summaries, total calculations               |
-| `FinancialAnalytics.tsx` | Financial analytics    | Period-based analysis, charts, data visualization |
-| `AddTransaction.tsx`     | Transaction creation   | Form validation, store selection                  |
-| `TransactionList.tsx`    | Transaction management | Filtering, deletion, modal details (Admin only)   |
-| `TransactionHistory.tsx` | Transaction history    | Filtering, sorting, store display (Admin Toko)    |
-| `StoreManager.tsx`       | Store CRUD operations  | Add, edit, delete stores (Admin only)             |
-| `useFirestore.ts`        | Database operations    | Real-time data, CRUD functions                    |
-| `useAuth.ts`             | Authentication logic   | Login/logout, level management                    |
+| File                     | Primary Function       | Key Features                                               |
+| ------------------------ | ---------------------- | ---------------------------------------------------------- |
+| `App.tsx`                | Main orchestrator      | Authentication routing, tab management                     |
+| `Login.tsx`              | User authentication    | Multi-level login, form validation                         |
+| `Header.tsx`             | Navigation & user info | User avatar, level display, logout                         |
+| `FinancialSummary.tsx`   | Financial dashboard    | Store summaries, total calculations                        |
+| `FinancialAnalytics.tsx` | Financial analytics    | Modern charts (Bar, Line, Doughnut), data visualization    |
+| `AddTransaction.tsx`     | Transaction creation   | Form validation, store selection, auto-update date         |
+| `TransactionList.tsx`    | Transaction management | Filtering, deletion, modal details, scrolling (Admin only) |
+| `TransactionHistory.tsx` | Transaction history    | Filtering, sorting, store display, scrolling (Admin Toko)  |
+| `StoreManager.tsx`       | Store CRUD operations  | Add, edit, delete stores (Admin only)                      |
+| `useFirestore.ts`        | Database operations    | Real-time data, CRUD functions                             |
+| `useAuth.ts`             | Authentication logic   | Login/logout, level management                             |
 
 ## 🚀 Cara Menjalankan Aplikasi
 
@@ -365,17 +414,18 @@ App.tsx
 
 - ✅ Akses penuh ke semua fitur
 - ✅ Kelola toko (tambah, edit, hapus)
-- ✅ Tambah transaksi
+- ✅ Tambah transaksi dengan waktu real-time
 - ✅ Lihat dan hapus transaksi
 - ✅ Lihat ringkasan keuangan konsolidasi
 - ✅ Lihat ringkasan per toko
-- ✅ Analisis keuangan dengan grafik (harian, mingguan, bulanan, tahunan)
+- ✅ Analisis keuangan dengan grafik modern (Bar, Line, Doughnut)
+- ✅ Export data transaksi ke PDF
 - ✅ Akses data sample
 
 ### Admin Toko (admintoko/admintoko)
 
 - ✅ Lihat ringkasan keuangan konsolidasi
-- ✅ Tambah transaksi
+- ✅ Tambah transaksi dengan waktu real-time
 - ✅ Lihat riwayat transaksi dari semua toko
 - ✅ Filter dan sort transaksi
 - ✅ Akses data sample
@@ -385,7 +435,7 @@ App.tsx
 
 ## 📱 Responsivitas
 
-Aplikasi dirancang responsif untuk berbagai ukuran layar:
+Aplikasi dirancang responsif untuk berbagai ukuran layar dengan Tailwind CSS:
 
 - **Desktop** (>1024px): Layout penuh dengan semua fitur
 - **Tablet** (768px-1024px): Layout yang disesuaikan
@@ -408,19 +458,20 @@ service cloud.firestore {
 
 **Note**: Untuk production, gunakan rules yang lebih ketat sesuai kebutuhan keamanan.
 
-## 🎨 Fitur UI/UX
+## 🎨 Fitur UI/UX Modern
 
-### Design System
+### Design System dengan Tailwind CSS
 
-- **Color Palette**: Biru, ungu, hijau, merah, kuning, orange
-- **Typography**: Font system yang konsisten
-- **Spacing**: Grid system yang teratur
-- **Shadows**: Elevation yang konsisten
-- **Animations**: Transisi smooth dan hover effects
+- **Utility-First Approach**: Styling langsung di dalam JSX
+- **Custom Theme**: Extended color palette dan animations
+- **Responsive Design**: Mobile-first dengan breakpoints
+- **Modern Charts**: Interactive charts dengan Chart.js
+- **Smooth Animations**: Transisi dan hover effects
 
 ### Visual Elements
 
 - **Gradient Backgrounds**: Header dan button dengan gradient
+- **Modern Charts**: Bar, Line, dan Doughnut charts
 - **Glassmorphism**: Efek blur pada card dan modal
 - **Icons**: Emoji icons untuk kemudahan penggunaan
 - **Loading States**: Spinner dan skeleton loading
@@ -440,6 +491,7 @@ service cloud.firestore {
 - Validasi data sebelum disimpan
 - Error handling yang komprehensif
 - Backup data otomatis di Firestore
+- Waktu input yang akurat untuk audit trail
 
 ## 📈 Performance
 
@@ -447,8 +499,9 @@ service cloud.firestore {
 
 - Lazy loading untuk komponen besar
 - Efficient re-rendering dengan React hooks
-- Optimized CSS dengan utility classes
+- Tailwind CSS dengan PurgeCSS otomatis
 - Minimal bundle size
+- Modern chart rendering dengan Chart.js
 
 ### Monitoring
 
@@ -490,7 +543,8 @@ Untuk pertanyaan atau dukungan:
 - Buat issue di GitHub repository
 - Hubungi developer melalui email
 - Dokumentasi lengkap tersedia di [SETUP.md](SETUP.md)
+- Panduan Tailwind CSS tersedia di [TAILWIND_GUIDE.md](TAILWIND_GUIDE.md)
 
 ---
 
-**Dibuat dengan ❤️ menggunakan React.js dan Firebase**
+**Dibuat dengan ❤️ menggunakan React.js, Tailwind CSS, Chart.js, dan Firebase**

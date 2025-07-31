@@ -1,5 +1,33 @@
 import React, { useState, useMemo } from "react";
 import { Transaction } from "../types";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  ArcElement,
+} from "chart.js";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+  ArcElement
+);
 
 interface Props {
   transactions: Transaction[];
@@ -12,6 +40,9 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
   const [selectedType, setSelectedType] = useState<
     "income" | "expense" | "both"
   >("both");
+  const [chartType, setChartType] = useState<"bar" | "line" | "doughnut">(
+    "bar"
+  );
 
   // Calculate data based on selected period
   const periodData = useMemo(() => {
@@ -148,66 +179,166 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
     }).format(amount);
   };
 
-  // Get max value for chart scaling
-  const maxValue = Math.max(
-    ...periodData.map((d) => Math.max(d.income, d.expense)),
-    1
-  );
+  // Prepare chart data
+  const chartData = useMemo(() => {
+    const labels = periodData.map((data) => formatDate(data.date));
 
-  // Generate chart bars
+    if (chartType === "doughnut") {
+      return {
+        labels: ["Pemasukan", "Pengeluaran"],
+        datasets: [
+          {
+            data: [totals.income, totals.expense],
+            backgroundColor: [
+              "rgba(34, 197, 94, 0.8)",
+              "rgba(239, 68, 68, 0.8)",
+            ],
+            borderColor: ["rgba(34, 197, 94, 1)", "rgba(239, 68, 68, 1)"],
+            borderWidth: 2,
+            hoverBackgroundColor: [
+              "rgba(34, 197, 94, 1)",
+              "rgba(239, 68, 68, 1)",
+            ],
+          },
+        ],
+      };
+    }
+
+    const datasets = [];
+
+    if (selectedType !== "expense") {
+      datasets.push({
+        label: "Pemasukan",
+        data: periodData.map((data) => data.income),
+        backgroundColor: "rgba(34, 197, 94, 0.8)",
+        borderColor: "rgba(34, 197, 94, 1)",
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        fill: chartType === "line",
+        tension: 0.4,
+        pointBackgroundColor: "rgba(34, 197, 94, 1)",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      });
+    }
+
+    if (selectedType !== "income") {
+      datasets.push({
+        label: "Pengeluaran",
+        data: periodData.map((data) => data.expense),
+        backgroundColor: "rgba(239, 68, 68, 0.8)",
+        borderColor: "rgba(239, 68, 68, 1)",
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        fill: chartType === "line",
+        tension: 0.4,
+        pointBackgroundColor: "rgba(239, 68, 68, 1)",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      });
+    }
+
+    return {
+      labels,
+      datasets,
+    };
+  }, [periodData, selectedType, chartType, totals]);
+
+  // Chart options
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top" as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
+            weight: "bold" as const,
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        borderColor: "rgba(255, 255, 255, 0.1)",
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true,
+        callbacks: {
+          label: function (context: any) {
+            return `${context.dataset.label}: ${formatCurrency(
+              context.parsed.y
+            )}`;
+          },
+        },
+      },
+    },
+    scales:
+      chartType !== "doughnut"
+        ? {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                font: {
+                  size: 11,
+                },
+                maxRotation: 45,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: "rgba(0, 0, 0, 0.1)",
+              },
+              ticks: {
+                font: {
+                  size: 11,
+                },
+                callback: function (value: any) {
+                  return formatCurrency(value);
+                },
+              },
+            },
+          }
+        : undefined,
+  };
+
+  // Render chart based on type
   const renderChart = () => {
-    return (
-      <div className="w-full overflow-x-auto">
-        <div className="flex items-end justify-between gap-2 min-h-64 p-4">
-          {periodData.map((data, index) => (
-            <div
-              key={data.date}
-              className="flex flex-col items-center flex-1 min-w-0"
-            >
-              <div className="text-xs text-gray-600 mb-2 text-center">
-                {formatDate(data.date)}
-              </div>
-              <div className="flex flex-col gap-1 w-full">
-                {selectedType !== "expense" && (
-                  <div
-                    className="bg-green-500 rounded-t text-white text-xs p-1 text-center min-h-6 flex items-center justify-center"
-                    style={{
-                      height: `${Math.max(
-                        (data.income / maxValue) * 200,
-                        24
-                      )}px`,
-                    }}
-                    title={`Pemasukan: ${formatCurrency(data.income)}`}
-                  >
-                    {data.income > 0 && (
-                      <span className="text-xs font-medium">
-                        {formatCurrency(data.income)}
-                      </span>
-                    )}
-                  </div>
-                )}
-                {selectedType !== "income" && (
-                  <div
-                    className="bg-red-500 rounded-b text-white text-xs p-1 text-center min-h-6 flex items-center justify-center"
-                    style={{
-                      height: `${Math.max(
-                        (data.expense / maxValue) * 200,
-                        24
-                      )}px`,
-                    }}
-                    title={`Pengeluaran: ${formatCurrency(data.expense)}`}
-                  >
-                    {data.expense > 0 && (
-                      <span className="text-xs font-medium">
-                        {formatCurrency(data.expense)}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+    if (periodData.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="text-6xl text-gray-400 mb-4">📊</div>
+          <p className="text-gray-600 text-center">
+            Tidak ada data transaksi untuk periode yang dipilih
+          </p>
         </div>
+      );
+    }
+
+    const chartHeight = chartType === "doughnut" ? "400px" : "500px";
+
+    return (
+      <div style={{ height: chartHeight }}>
+        {chartType === "bar" && <Bar data={chartData} options={chartOptions} />}
+        {chartType === "line" && (
+          <Line data={chartData} options={chartOptions} />
+        )}
+        {chartType === "doughnut" && (
+          <Doughnut data={chartData} options={chartOptions} />
+        )}
       </div>
     );
   };
@@ -258,6 +389,21 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
               <option value="both">Pemasukan & Pengeluaran</option>
               <option value="income">Pemasukan Saja</option>
               <option value="expense">Pengeluaran Saja</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 min-w-48">
+            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+              📈 Jenis Grafik
+            </label>
+            <select
+              value={chartType}
+              onChange={(e) => setChartType(e.target.value as any)}
+              className="px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
+            >
+              <option value="bar">Bar Chart</option>
+              <option value="line">Line Chart</option>
+              <option value="doughnut">Doughnut Chart</option>
             </select>
           </div>
         </div>
@@ -319,7 +465,7 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
       </div>
 
       {/* Chart */}
-      <div className="bg-gray-50 rounded-xl p-6">
+      <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm">
         <h3 className="text-xl font-bold text-gray-800 mb-4">
           Grafik{" "}
           {selectedPeriod === "daily"
@@ -331,18 +477,9 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
             : "Tahunan"}
         </h3>
 
-        {periodData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <div className="text-6xl text-gray-400 mb-4">📊</div>
-            <p className="text-gray-600 text-center">
-              Tidak ada data transaksi untuk periode yang dipilih
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg p-4 border border-gray-200">
-            {renderChart()}
-          </div>
-        )}
+        <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+          {renderChart()}
+        </div>
       </div>
 
       {/* Data Table */}
