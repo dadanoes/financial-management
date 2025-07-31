@@ -28,7 +28,7 @@ const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl p-6">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl p-6 shadow-lg">
       <div className="flex items-center mb-4">
         <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
           <span className="text-white text-xl">🎯</span>
@@ -42,9 +42,9 @@ const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
       </div>
       <button
         onClick={handleAddSampleData}
-        className="btn btn-blue flex items-center"
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
       >
-        <span className="mr-2">📊</span>
+        <span>📊</span>
         Tambah Data Sample
       </button>
     </div>

@@ -121,11 +121,11 @@ function App() {
       <main className="container mx-auto px-4 py-8">
         {/* Tab Navigation - Only show for admin utama */}
         {level === "admin" && (
-          <div className="mb-8">
-            <div className="flex space-x-1 bg-white rounded-lg p-1 shadow-md">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-1 bg-white rounded-lg p-2 sm:p-1 shadow-md">
               <button
                 onClick={() => setActiveTab("dashboard")}
-                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-md font-medium transition-colors text-sm sm:text-base ${
                   activeTab === "dashboard"
                     ? "bg-blue-600 text-white shadow-sm"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
@@ -135,7 +135,7 @@ function App() {
               </button>
               <button
                 onClick={() => setActiveTab("analytics")}
-                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-md font-medium transition-colors text-sm sm:text-base ${
                   activeTab === "analytics"
                     ? "bg-blue-600 text-white shadow-sm"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
@@ -145,7 +145,7 @@ function App() {
               </button>
               <button
                 onClick={() => setActiveTab("stores")}
-                className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+                className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-md font-medium transition-colors text-sm sm:text-base ${
                   activeTab === "stores"
                     ? "bg-blue-600 text-white shadow-sm"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"

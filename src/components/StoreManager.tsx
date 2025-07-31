@@ -99,9 +99,9 @@ const StoreManager: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-xl shadow-lg p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center">
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
           <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
             <span className="text-orange-600 font-bold">🏪</span>
           </div>
@@ -109,9 +109,9 @@ const StoreManager: React.FC<Props> = ({
         </h2>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="btn btn-blue flex items-center"
+          className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
         >
-          <span className="mr-2">{isOpen ? "✕" : "➕"}</span>
+          <span>{isOpen ? "✕" : "➕"}</span>
           {isOpen ? "Tutup" : "Tambah Toko"}
         </button>
       </div>
@@ -119,7 +119,7 @@ const StoreManager: React.FC<Props> = ({
       {isOpen && (
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 bg-gradient-to-br from-orange-50 to-white rounded-xl p-6 border border-orange-200 mb-6"
+          className="space-y-6 bg-gradient-to-br from-orange-50 to-white rounded-xl p-6 border border-orange-200 shadow-sm mb-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -131,7 +131,7 @@ const StoreManager: React.FC<Props> = ({
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="form-input"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
                 placeholder="Masukkan nama toko"
                 required
               />
@@ -146,7 +146,7 @@ const StoreManager: React.FC<Props> = ({
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className="form-input"
+                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
                 placeholder="081234567890"
               />
             </div>
@@ -161,7 +161,7 @@ const StoreManager: React.FC<Props> = ({
               name="address"
               value={formData.address}
               onChange={handleInputChange}
-              className="form-input"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
               placeholder="Masukkan alamat toko"
             />
           </div>
@@ -174,21 +174,24 @@ const StoreManager: React.FC<Props> = ({
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="form-textarea"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white shadow-sm hover:border-gray-400 transition-colors resize-none"
               rows={3}
               placeholder="Deskripsi singkat tentang toko"
             />
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={handleCancel}
-              className="btn btn-gray"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               ❌ Batal
             </button>
-            <button type="submit" className="btn btn-blue">
+            <button
+              type="submit"
+              className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+            >
               {isEditing ? "✏️ Update Toko" : "💾 Simpan Toko"}
             </button>
           </div>
@@ -196,19 +199,21 @@ const StoreManager: React.FC<Props> = ({
       )}
 
       {/* Store List */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-          <span className="mr-2">📋</span>
+      <div className="space-y-6">
+        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+          <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+            <span className="text-blue-600 text-sm">📋</span>
+          </div>
           Daftar Toko ({stores.length})
         </h3>
 
         {stores.length === 0 ? (
-          <div className="text-center py-12 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300">
-            <div className="text-6xl mb-4">🏪</div>
-            <p className="text-gray-500 text-lg font-medium">
+          <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300 shadow-sm">
+            <div className="text-8xl mb-6 text-gray-300">🏪</div>
+            <h3 className="text-xl font-bold text-gray-600 mb-2">
               Belum ada toko yang ditambahkan
-            </p>
-            <p className="text-gray-400 text-sm">
+            </h3>
+            <p className="text-gray-500 text-sm">
               Klik "Tambah Toko" untuk menambahkan toko pertama
             </p>
           </div>
@@ -217,23 +222,23 @@ const StoreManager: React.FC<Props> = ({
             {stores.map((store) => (
               <div
                 key={store.id}
-                className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-300 hover:scale-105 shadow-sm"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center shadow-md">
                     <span className="text-white font-bold text-lg">🏪</span>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(store)}
-                      className="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors"
+                      className="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors shadow-sm"
                       title="Edit Toko"
                     >
                       ✏️
                     </button>
                     <button
                       onClick={() => handleDelete(store.id)}
-                      className="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors"
+                      className="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors shadow-sm"
                       title="Hapus Toko"
                     >
                       🗑️

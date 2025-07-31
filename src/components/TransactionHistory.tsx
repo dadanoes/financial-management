@@ -83,14 +83,7 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
     });
 
     return filtered;
-  }, [
-    transactions,
-    userStore,
-    selectedType,
-    selectedDateFilter,
-    sortBy,
-    sortOrder,
-  ]);
+  }, [transactions, selectedType, selectedDateFilter, sortBy, sortOrder]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -101,11 +94,18 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
   };
 
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("id-ID", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return (
+      new Date(date).toLocaleDateString("id-ID", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }) +
+      " " +
+      new Date(date).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   };
 
   const getSortIcon = (field: string) => {
@@ -123,23 +123,30 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
   };
 
   return (
-    <div className="transaction-history-container">
-      <div className="transaction-history-header">
-        <h2 className="transaction-history-title">📋 Riwayat Transaksi</h2>
-        <p className="transaction-history-subtitle">
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          📋 Riwayat Transaksi
+        </h2>
+        <p className="text-gray-600">
           Total: {filteredTransactions.length} transaksi
         </p>
       </div>
 
       {/* Filters */}
-      <div className="filters-section">
-        <div className="filters-row">
-          <div className="filter-group">
-            <label className="filter-label">💰 Filter Jenis:</label>
+      <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 shadow-sm">
+        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 text-center">
+          🔍 Filter Transaksi
+        </h3>
+        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6">
+          <div className="flex flex-col gap-2 w-full sm:min-w-48">
+            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+              💰 Filter Jenis
+            </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="filter-select"
+              className="px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
             >
               <option value="all">Semua Jenis</option>
               <option value="income">Pemasukan</option>
@@ -147,12 +154,14 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label className="filter-label">📅 Filter Tanggal:</label>
+          <div className="flex flex-col gap-2 w-full sm:min-w-48">
+            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+              📅 Filter Tanggal
+            </label>
             <select
               value={selectedDateFilter}
               onChange={(e) => setSelectedDateFilter(e.target.value)}
-              className="filter-select"
+              className="px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors"
             >
               <option value="all">Semua Tanggal</option>
               <option value="today">Hari Ini</option>
@@ -165,72 +174,93 @@ const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {
       </div>
 
       {/* Transactions Table */}
-      <div className="table-container">
-        <table className="transaction-table">
-          <thead>
-            <tr>
-              <th
-                className="sortable-header"
-                onClick={() => handleSort("date")}
-              >
-                Tanggal {getSortIcon("date")}
-              </th>
-              <th>Toko</th>
-              <th>Jenis</th>
-              <th
-                className="sortable-header"
-                onClick={() => handleSort("amount")}
-              >
-                Jumlah {getSortIcon("amount")}
-              </th>
-              <th>Deskripsi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTransactions.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="empty-message">
-                  <div className="empty-state">
-                    <span className="empty-icon">📝</span>
-                    <p>Tidak ada transaksi yang ditemukan</p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="transaction-row">
-                  <td className="date-cell">{formatDate(transaction.date)}</td>
-                  <td className="store-cell">
-                    <span className="store-badge">
-                      🏪 {transaction.storeName}
-                    </span>
-                  </td>
-                  <td className="type-cell">
-                    <span
-                      className={`type-badge ${
-                        transaction.type === "income" ? "income" : "expense"
-                      }`}
-                    >
-                      {transaction.type === "income"
-                        ? "💰 Pemasukan"
-                        : "💸 Pengeluaran"}
-                    </span>
-                  </td>
-                  <td
-                    className={`amount-cell ${
-                      transaction.type === "income" ? "income" : "expense"
-                    }`}
+      <div className="overflow-x-auto">
+        <div className="relative border border-gray-300 rounded-lg">
+          <div className="max-h-80 overflow-y-auto">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gray-50">
+                  <th
+                    className="border border-gray-300 p-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors bg-gray-50"
+                    onClick={() => handleSort("date")}
                   >
-                    {formatCurrency(transaction.amount)}
-                  </td>
-                  <td className="description-cell">
-                    {transaction.description}
-                  </td>
+                    Tanggal & Waktu {getSortIcon("date")}
+                  </th>
+                  <th className="border border-gray-300 p-3 text-left font-semibold text-gray-700 bg-gray-50">
+                    Toko
+                  </th>
+                  <th className="border border-gray-300 p-3 text-left font-semibold text-gray-700 bg-gray-50">
+                    Jenis
+                  </th>
+                  <th
+                    className="border border-gray-300 p-3 text-left font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors bg-gray-50"
+                    onClick={() => handleSort("amount")}
+                  >
+                    Jumlah {getSortIcon("amount")}
+                  </th>
+                  <th className="border border-gray-300 p-3 text-left font-semibold text-gray-700 bg-gray-50">
+                    Deskripsi
+                  </th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {filteredTransactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8">
+                      <div className="flex flex-col items-center gap-2">
+                        <span className="text-4xl text-gray-400">📝</span>
+                        <p className="text-gray-600">
+                          Tidak ada transaksi yang ditemukan
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTransactions.map((transaction) => (
+                    <tr
+                      key={transaction.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="border border-gray-300 p-3">
+                        {formatDate(transaction.date)}
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                          🏪 {transaction.storeName}
+                        </span>
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            transaction.type === "income"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {transaction.type === "income"
+                            ? "💰 Pemasukan"
+                            : "💸 Pengeluaran"}
+                        </span>
+                      </td>
+                      <td
+                        className={`border border-gray-300 p-3 font-semibold ${
+                          transaction.type === "income"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {formatCurrency(transaction.amount)}
+                      </td>
+                      <td className="border border-gray-300 p-3">
+                        {transaction.description}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -74,10 +74,12 @@ export const useFirestore = () => {
     transactionData: Omit<Transaction, "id" | "createdAt">
   ) => {
     try {
-      await addDoc(collection(db, "transactions"), {
+      const transactionRef = await addDoc(collection(db, "transactions"), {
         ...transactionData,
         createdAt: Timestamp.now(),
       });
+
+      return transactionRef;
     } catch (error) {
       console.error("Error adding transaction:", error);
       throw error;
