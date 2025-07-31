@@ -2,6 +2,7 @@
   "name": "financial-management-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://finapp-c956b.web.app",
   "dependencies": {
     "@headlessui/react": "^2.2.6",
     "@heroicons/react": "^2.2.0",

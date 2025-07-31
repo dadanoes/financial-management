@@ -3,7 +3,7 @@ import { Transaction } from "../types";
 
 interface Props {
   transactions: Transaction[];
-  userStore?: string;
+  userStore?: string | null;
 }
 
 const TransactionHistory: React.FC<Props> = ({ transactions, userStore }) => {

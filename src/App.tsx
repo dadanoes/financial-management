@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import FinancialSummary from "./components/FinancialSummary";
 import AddTransaction from "./components/AddTransaction";
@@ -17,36 +17,53 @@ function App() {
     "dashboard" | "stores" | "analytics"
   >("dashboard");
 
-  const { isAuthenticated, user, level, userStore, login, logout } = useAuth();
+  // Add debugging
+  useEffect(() => {
+    console.log("App component mounted");
+  }, []);
+
+  const {
+    user,
+    loading: authLoading,
+    logout,
+    isAuthenticated,
+    role,
+    userStore,
+  } = useAuth();
 
   const {
     transactions,
     stores,
-    loading,
-    addTransaction,
+    loading: firestoreLoading,
     deleteTransaction,
-    addStore,
-    updateStore,
-    deleteStore,
     calculateFinancialSummary,
   } = useFirestore();
 
-  const handleLogin = (username: string, password: string): boolean => {
-    const success = login(username, password);
-    return success;
-  };
+  // Add debugging
+  useEffect(() => {
+    console.log("App Debug:", {
+      authLoading,
+      isAuthenticated,
+      firestoreLoading,
+      user: user?.email,
+      role,
+      userStore,
+      transactionsCount: transactions?.length,
+      storesCount: stores?.length,
+    });
+  }, [
+    authLoading,
+    isAuthenticated,
+    firestoreLoading,
+    user,
+    role,
+    userStore,
+    transactions,
+    stores,
+  ]);
 
   const handleLogout = () => {
     logout();
-  };
-
-  const handleAddTransaction = async (transactionData: any) => {
-    try {
-      await addTransaction(transactionData);
-    } catch (error) {
-      console.error("Error adding transaction:", error);
-      alert("Gagal menambahkan transaksi. Silakan coba lagi.");
-    }
   };
 
   const handleDeleteTransaction = async (id: string) => {
@@ -58,53 +75,32 @@ function App() {
     }
   };
 
-  const handleAddStore = async (storeData: any) => {
-    try {
-      await addStore(storeData);
-    } catch (error) {
-      console.error("Error adding store:", error);
-      alert("Gagal menambahkan toko. Silakan coba lagi.");
-    }
-  };
-
-  const handleUpdateStore = async (id: string, storeData: any) => {
-    try {
-      await updateStore(id, storeData);
-    } catch (error) {
-      console.error("Error updating store:", error);
-      alert("Gagal mengupdate toko. Silakan coba lagi.");
-    }
-  };
-
-  const handleDeleteStore = async (id: string) => {
-    try {
-      await deleteStore(id);
-    } catch (error) {
-      console.error("Error deleting store:", error);
-      alert("Gagal menghapus toko. Silakan coba lagi.");
-    }
-  };
-
-  const handleAddSampleData = async (transactions: any[]) => {
-    try {
-      for (const transaction of transactions) {
-        await addTransaction(transaction);
-      }
-    } catch (error) {
-      console.error("Error adding sample data:", error);
-      throw error;
-    }
-  };
+  // Show loading screen while checking authentication
+  if (authLoading) {
+    console.log("Showing auth loading screen");
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   // Show login screen if not authenticated
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    console.log("Showing login screen");
+    return <Login />;
   }
 
-  if (loading) {
+  // Show loading screen while loading Firestore data
+  if (firestoreLoading) {
+    console.log("Showing firestore loading screen");
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header user={user} level={level} onLogout={handleLogout} />
+        <Header
+          user={user?.email || ""}
+          level={role || null}
+          onLogout={handleLogout}
+        />
         <div className="container mx-auto px-4 py-8">
           <LoadingSpinner />
         </div>
@@ -112,15 +108,20 @@ function App() {
     );
   }
 
+  console.log("Rendering main app");
   const financialSummary = calculateFinancialSummary();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header user={user} level={level} onLogout={handleLogout} />
+      <Header
+        user={user?.email || ""}
+        level={role || null}
+        onLogout={handleLogout}
+      />
 
       <main className="container mx-auto px-4 py-8">
         {/* Tab Navigation - Only show for admin utama */}
-        {level === "admin" && (
+        {role === "admin" && (
           <div className="mb-6 sm:mb-8">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-1 bg-white rounded-lg p-2 sm:p-1 shadow-md">
               <button
@@ -157,101 +158,48 @@ function App() {
           </div>
         )}
 
-        {/* Admin Toko - Only Dashboard */}
-        {level === "admintoko" && (
+        {/* Content based on role and active tab */}
+        {role === "admintoko" && (
           <div className="space-y-8">
-            {/* Financial Summary */}
             <FinancialSummary
               summary={financialSummary}
-              level={level}
+              level={role || null}
               userStore={userStore}
             />
-
-            {/* Sample Data Button */}
             {transactions.length === 0 && stores.length > 0 && (
-              <SampleDataButton onAddTransactions={handleAddSampleData} />
+              <SampleDataButton />
             )}
-
-            {/* Add Transaction */}
             <AddTransaction
-              onAddTransaction={handleAddTransaction}
               stores={stores}
-              level={level}
+              level={role || null}
               userStore={userStore}
             />
-
-            {/* Transaction History - Hanya riwayat transaksi */}
             <TransactionHistory
               transactions={transactions}
               userStore={userStore}
             />
-
-            {/* Access Restricted Message */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-              <div className="flex items-center">
-                <span className="text-yellow-600 text-2xl mr-3">🔒</span>
-                <div>
-                  <h3 className="text-yellow-800 font-bold text-lg">
-                    Akses Terbatas
-                  </h3>
-                  <p className="text-yellow-700 text-sm">
-                    Sebagai Admin Toko, Anda hanya dapat menambah transaksi dan
-                    melihat ringkasan keuangan toko Anda. Untuk akses penuh,
-                    hubungi Admin Utama.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
-        {/* Admin Utama - Full Access */}
-        {level === "admin" && (
+        {role === "admin" && (
           <>
             {activeTab === "dashboard" && (
               <div className="space-y-8">
-                {/* Financial Summary */}
-                <FinancialSummary summary={financialSummary} level={level} />
-
-                {/* Sample Data Button */}
+                <FinancialSummary summary={financialSummary} level={role} />
                 {transactions.length === 0 && stores.length > 0 && (
-                  <SampleDataButton onAddTransactions={handleAddSampleData} />
+                  <SampleDataButton />
                 )}
-
-                {/* Add Transaction */}
-                <AddTransaction
-                  onAddTransaction={handleAddTransaction}
-                  stores={stores}
-                  level={level}
-                  userStore={userStore}
-                />
-
-                {/* Transaction List */}
+                <AddTransaction stores={stores} level={role || null} />
                 <TransactionList
                   transactions={transactions}
                   onDeleteTransaction={handleDeleteTransaction}
                 />
               </div>
             )}
-
             {activeTab === "analytics" && (
-              <div className="space-y-8">
-                {/* Financial Analytics */}
-                <FinancialAnalytics transactions={transactions} />
-              </div>
+              <FinancialAnalytics transactions={transactions} />
             )}
-
-            {activeTab === "stores" && (
-              <div className="space-y-8">
-                {/* Store Manager */}
-                <StoreManager
-                  stores={stores}
-                  onAddStore={handleAddStore}
-                  onDeleteStore={handleDeleteStore}
-                  onEditStore={handleUpdateStore}
-                />
-              </div>
-            )}
+            {activeTab === "stores" && <StoreManager stores={stores} />}
           </>
         )}
       </main>

@@ -1,108 +1,156 @@
 import { useState, useEffect } from "react";
+import {
+  User,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
+
+interface UserWithRole extends User {
+  role?: "admin" | "admintoko";
+  userStore?: string | null;
+}
 
 interface AuthState {
-  isAuthenticated: boolean;
-  user: string | null;
-  level: "admin" | "admintoko" | null;
-  userStore?: string; // Toko yang dikelola oleh admin toko
+  user: UserWithRole | null;
+  loading: boolean;
+  error: string | null;
 }
 
 export const useAuth = () => {
-  const [authState, setAuthState] = useState<AuthState>(() => {
-    // Check if user is already logged in from localStorage
-    const savedAuth = localStorage.getItem("financial-app-auth");
-    if (savedAuth) {
-      try {
-        const parsed = JSON.parse(savedAuth);
-        return {
-          isAuthenticated: parsed.isAuthenticated || false,
-          user: parsed.user || null,
-          level: parsed.level || null,
-          userStore: parsed.userStore || null,
-        };
-      } catch {
-        return { isAuthenticated: false, user: null, level: null };
-      }
-    }
-    return { isAuthenticated: false, user: null, level: null };
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    loading: true,
+    error: null,
   });
 
-  const login = (username: string, password: string): boolean => {
-    // Admin utama - akses penuh
-    if (username === "admin" && password === "admin123") {
-      const newAuthState = {
-        isAuthenticated: true,
-        user: username,
-        level: "admin" as const,
-        userStore: undefined,
-      };
-      setAuthState(newAuthState);
-
-      // Save to localStorage
-      localStorage.setItem("financial-app-auth", JSON.stringify(newAuthState));
-
-      return true;
-    }
-
-    // Admin toko - akses terbatas
-    if (username === "admintoko" && password === "admintoko") {
-      const newAuthState = {
-        isAuthenticated: true,
-        user: username,
-        level: "admintoko" as const,
-        userStore: "Toko Admin", // Default store untuk admin toko
-      };
-      setAuthState(newAuthState);
-
-      // Save to localStorage
-      localStorage.setItem("financial-app-auth", JSON.stringify(newAuthState));
-
-      return true;
-    }
-
-    return false;
-  };
-
-  const logout = () => {
-    const newAuthState = {
-      isAuthenticated: false,
-      user: null,
-      level: null,
-      userStore: undefined,
-    };
-    setAuthState(newAuthState);
-
-    // Remove from localStorage
-    localStorage.removeItem("financial-app-auth");
-  };
-
-  // Check authentication status on mount
+  // Listen to authentication state changes
   useEffect(() => {
-    const savedAuth = localStorage.getItem("financial-app-auth");
-    if (savedAuth) {
-      try {
-        const parsed = JSON.parse(savedAuth);
-        if (parsed.isAuthenticated && parsed.user && parsed.level) {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (user) => {
+        if (user) {
+          try {
+            // Get user document from Firestore
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              const userWithRole: UserWithRole = {
+                ...user,
+                role: userData.role || "admintoko",
+                userStore: userData.userStore || null,
+              };
+
+              setAuthState({
+                user: userWithRole,
+                loading: false,
+                error: null,
+              });
+            } else {
+              // User document doesn't exist, create default role
+              const userWithRole: UserWithRole = {
+                ...user,
+                role: "admintoko",
+                userStore: null,
+              };
+
+              setAuthState({
+                user: userWithRole,
+                loading: false,
+                error: null,
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            setAuthState({
+              user: null,
+              loading: false,
+              error: "Failed to fetch user data",
+            });
+          }
+        } else {
           setAuthState({
-            isAuthenticated: true,
-            user: parsed.user,
-            level: parsed.level,
-            userStore: parsed.userStore || null,
+            user: null,
+            loading: false,
+            error: null,
           });
         }
-      } catch {
-        // Invalid data in localStorage, clear it
-        localStorage.removeItem("financial-app-auth");
+      },
+      (error) => {
+        console.error("Auth state change error:", error);
+        setAuthState({
+          user: null,
+          loading: false,
+          error: error.message,
+        });
       }
-    }
+    );
+
+    return () => unsubscribe();
   }, []);
 
+  const login = async (email: string, password: string) => {
+    setAuthState((prev) => ({ ...prev, loading: true, error: null }));
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // The onAuthStateChanged listener will handle the rest
+      return { success: true };
+    } catch (error: any) {
+      let errorMessage = "Login failed";
+
+      switch (error.code) {
+        case "auth/user-not-found":
+          errorMessage = "Email tidak ditemukan";
+          break;
+        case "auth/wrong-password":
+          errorMessage = "Password salah";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Format email tidak valid";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Terlalu banyak percobaan login. Coba lagi nanti";
+          break;
+        default:
+          errorMessage = error.message || "Terjadi kesalahan saat login";
+      }
+
+      setAuthState((prev) => ({
+        ...prev,
+        loading: false,
+        error: errorMessage,
+      }));
+
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      // The onAuthStateChanged listener will handle the state update
+    } catch (error: any) {
+      console.error("Logout error:", error);
+      setAuthState((prev) => ({
+        ...prev,
+        error: "Gagal logout",
+      }));
+    }
+  };
+
   return {
-    isAuthenticated: authState.isAuthenticated,
     user: authState.user,
-    level: authState.level,
-    userStore: authState.userStore,
+    loading: authState.loading,
+    error: authState.error,
     login,
     logout,
+    isAuthenticated: !!authState.user,
+    role: authState.user?.role,
+    userStore: authState.user?.userStore,
   };
 };

@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { sampleTransactions } from "../utils/sampleData";
+import { useFirestore } from "../hooks/useFirestore";
 
-interface Props {
-  onAddTransactions: (transactions: typeof sampleTransactions) => void;
-}
+const SampleDataButton: React.FC = () => {
+  const { addTransaction } = useFirestore();
+  const [isLoading, setIsLoading] = useState(false);
 
-const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
   const handleAddSampleData = async () => {
     if (
       window.confirm(
         "Apakah Anda yakin ingin menambahkan data sample? Data ini akan membantu Anda melihat bagaimana aplikasi bekerja."
       )
     ) {
+      setIsLoading(true);
       try {
         // Add transactions one by one to simulate real usage
         for (const transaction of sampleTransactions) {
-          await onAddTransactions([transaction]);
+          await addTransaction(transaction);
           // Small delay to avoid overwhelming the database
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
@@ -23,6 +24,8 @@ const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
       } catch (error) {
         console.error("Error adding sample data:", error);
         alert("Gagal menambahkan data sample. Silakan coba lagi.");
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -42,10 +45,20 @@ const SampleDataButton: React.FC<Props> = ({ onAddTransactions }) => {
       </div>
       <button
         onClick={handleAddSampleData}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+        disabled={isLoading}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span>📊</span>
-        Tambah Data Sample
+        {isLoading ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            Menambahkan...
+          </>
+        ) : (
+          <>
+            <span>📊</span>
+            Tambah Data Sample
+          </>
+        )}
       </button>
     </div>
   );

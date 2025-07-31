@@ -157,24 +157,30 @@ export const useFirestore = () => {
     // Group transactions by store
     const storeMap = new Map<string, StoreSummary>();
 
-    transactions.forEach((transaction) => {
-      const storeName = transaction.storeName;
-      const existing = storeMap.get(storeName) || {
-        id: storeName,
-        name: storeName,
+    // Initialize store summaries from stores collection
+    stores.forEach((store) => {
+      storeMap.set(store.name, {
+        id: store.id,
+        name: store.name,
         totalIncome: 0,
         totalExpense: 0,
         balance: 0,
-      };
+      });
+    });
 
-      if (transaction.type === "income") {
-        existing.totalIncome += transaction.amount;
-      } else {
-        existing.totalExpense += transaction.amount;
+    // Calculate transactions for each store
+    transactions.forEach((transaction) => {
+      const storeName = transaction.storeName;
+      const existing = storeMap.get(storeName);
+
+      if (existing) {
+        if (transaction.type === "income") {
+          existing.totalIncome += transaction.amount;
+        } else {
+          existing.totalExpense += transaction.amount;
+        }
+        existing.balance = existing.totalIncome - existing.totalExpense;
       }
-
-      existing.balance = existing.totalIncome - existing.totalExpense;
-      storeMap.set(storeName, existing);
     });
 
     // Convert to array and sort by name

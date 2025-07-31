@@ -1,23 +1,26 @@
-# 🏪 Aplikasi Manajemen Keuangan Toko Terpusat
+# 🏪 Financial Management App
 
-Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampilkan data pemasukan, pengeluaran, dan saldo bersih dari berbagai toko dalam satu dashboard yang mudah digunakan dengan teknologi modern.
+Aplikasi manajemen keuangan toko yang modern dan responsif dengan sistem autentikasi multi-level menggunakan Firebase.
 
 ## ✨ Fitur Utama
 
-### 🔐 Sistem Autentikasi Multi-Level
+### 🔐 Sistem Autentikasi Multi-Level dengan Firebase
 
 - **👑 Admin Utama (Level 1)**
 
-  - Username: `admin`
-  - Password: `admin123`
   - Akses penuh ke semua fitur aplikasi
   - Dapat mengelola toko, transaksi, dan melihat semua data
+  - Dashboard dengan ringkasan keuangan konsolidasi
+  - Analisis keuangan dengan grafik modern
+  - Export data ke PDF
 
 - **🏪 Admin Toko (Level 2)**
-  - Username: `admintoko`
-  - Password: `admintoko`
   - Akses terbatas untuk operasi harian
   - Dapat menambah transaksi dan melihat riwayat transaksi dari semua toko
+  - Dashboard dengan ringkasan keuangan per toko
+  - Filter dan sort transaksi
+
+**Catatan**: Sistem autentikasi menggunakan Firebase Authentication dengan role-based access control yang disimpan di Firestore. Kredensial login dapat dikonfigurasi melalui Firebase Console.
 
 ### 📊 Dashboard Keuangan
 
@@ -44,7 +47,7 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 ### 🏪 Manajemen Toko (Admin Utama)
 
 - **Tambah Toko Baru**: Tambahkan toko baru dengan informasi lengkap (nama, deskripsi, alamat, telepon)
-- **Edit Informasi Toko**: Update data toko yang sudah ada
+- **Edit Informasi Toko**: Update data toko yang sudah ada dengan real-time update
 - **Hapus Toko**: Hapus toko yang tidak lagi aktif
 - **Daftar Toko**: Tampilkan semua toko dalam format yang mudah dibaca
 
@@ -91,326 +94,73 @@ Aplikasi web manajemen keuangan terpusat yang dapat mengintegrasikan dan menampi
 ### Backend & Database
 
 - **Firebase Firestore**: Database NoSQL real-time untuk penyimpanan data
-- **Firebase Authentication**: Sistem autentikasi yang aman (dikustomisasi untuk demo)
+- **Firebase Authentication**: Sistem autentikasi yang aman dengan email/password
 - **Real-time Updates**: Data terupdate secara otomatis tanpa refresh
+- **Role-based Access Control**: Sistem akses berdasarkan peran user
+- **Security Rules**: Firestore security rules untuk keamanan data
 
 ### Development Tools
 
 - **Create React App**: Tool untuk setup project React
 - **npm**: Package manager untuk JavaScript
-- **ESLint**: Linting tool untuk kode quality
-- **Git**: Version control system
+- **Firebase CLI**: Command line tools untuk deployment dan management
+- **ESLint**: Code linting untuk maintainability
 
-### Styling & UI/UX
-
-- **Tailwind CSS**: Utility-first CSS framework dengan custom configuration
-- **Custom Theme**: Extended color palette dan animations
-- **Modern Charts**: Interactive charts dengan smooth animations
-- **Gradient Backgrounds**: Visual design yang menarik
-- **Glassmorphism Effects**: Efek visual modern dengan backdrop blur
-
-### State Management
-
-- **React Hooks**: useState, useEffect untuk state management
-- **Custom Hooks**: useFirestore, useAuth untuk logic yang reusable
-- **Local Storage**: Penyimpanan state autentikasi di browser
-
-## 📁 Struktur Project
-
-```
-financial-management-app/
-├── public/                          # Static files
-│   ├── index.html                   # HTML template utama
-│   ├── favicon.ico                  # Icon aplikasi
-│   ├── manifest.json                # PWA manifest
-│   └── robots.txt                   # SEO robots file
-│
-├── src/                             # Source code aplikasi
-│   ├── components/                  # React components
-│   │   ├── Header.tsx               # Header dengan info user dan level admin
-│   │   ├── Login.tsx                # Halaman login dengan form autentikasi
-│   │   ├── FinancialSummary.tsx     # Ringkasan keuangan per toko dan total
-│   │   ├── FinancialAnalytics.tsx   # Analisis keuangan dengan grafik modern
-│   │   ├── AddTransaction.tsx       # Form untuk menambah transaksi
-│   │   ├── TransactionList.tsx      # Daftar dan manajemen transaksi (Admin Utama)
-│   │   ├── TransactionHistory.tsx   # Riwayat transaksi dengan filter (Admin Toko)
-│   │   ├── StoreManager.tsx         # Manajemen toko (CRUD operations)
-│   │   ├── LoadingSpinner.tsx       # Komponen loading spinner
-│   │   └── SampleDataButton.tsx     # Button untuk menambah data sample
-│   │
-│   ├── hooks/                       # Custom React hooks
-│   │   ├── useFirestore.ts          # Hook untuk interaksi dengan Firestore
-│   │   └── useAuth.ts               # Hook untuk autentikasi dan level admin
-│   │
-│   ├── types/                       # TypeScript type definitions
-│   │   └── index.ts                 # Interfaces untuk Transaction, Store, dll
-│   │
-│   ├── utils/                       # Utility functions
-│   │   └── sampleData.ts            # Data sample untuk testing aplikasi
-│   │
-│   ├── App.tsx                      # Komponen utama aplikasi (root component)
-│   ├── index.tsx                    # Entry point aplikasi
-│   ├── index.css                    # Global CSS styles dengan Tailwind directives
-│   └── firebase.ts                  # Konfigurasi Firebase dan Firestore
-│
-├── .env                             # Environment variables (Firebase config)
-├── .gitignore                       # Git ignore rules
-├── package.json                     # Dependencies dan scripts
-├── tsconfig.json                    # TypeScript configuration
-├── tailwind.config.js               # Tailwind CSS configuration
-├── postcss.config.js                # PostCSS configuration
-├── README.md                        # Dokumentasi utama project
-├── SETUP.md                         # Panduan setup dan konfigurasi
-├── TAILWIND_GUIDE.md                # Panduan penggunaan Tailwind CSS
-└── FINAL_SUMMARY.md                 # Ringkasan fitur dan teknologi
-```
-
-### 📂 Penjelasan Detail Struktur
-
-#### **public/**
-
-- **index.html**: Template HTML utama dengan meta tags dan root div
-- **favicon.ico**: Icon aplikasi yang ditampilkan di browser tab
-- **manifest.json**: Konfigurasi PWA (Progressive Web App)
-- **robots.txt**: File untuk SEO dan web crawlers
-
-#### **src/components/**
-
-- **Header.tsx**: Header aplikasi dengan logo, user info, dan logout button
-- **Login.tsx**: Form login dengan validasi dan level admin selection
-- **FinancialSummary.tsx**: Dashboard ringkasan keuangan dengan cards dan stats
-- **FinancialAnalytics.tsx**: Analisis keuangan dengan grafik modern (Chart.js)
-- **AddTransaction.tsx**: Form untuk menambah transaksi baru dengan auto-update date
-- **TransactionList.tsx**: Tabel/list transaksi dengan filter, scrolling, dan actions (Admin Utama)
-- **TransactionHistory.tsx**: Riwayat transaksi dengan filter, sorting, dan scrolling (Admin Toko)
-- **StoreManager.tsx**: CRUD operations untuk manajemen toko
-- **LoadingSpinner.tsx**: Komponen loading dengan animasi
-- **SampleDataButton.tsx**: Button untuk menambah data testing
-
-#### **src/hooks/**
-
-- **useFirestore.ts**: Custom hook untuk operasi database (CRUD transactions & stores)
-- **useAuth.ts**: Custom hook untuk autentikasi dan level admin management
-
-#### **src/types/**
-
-- **index.ts**: TypeScript interfaces untuk type safety
-  - `Transaction`: Interface untuk data transaksi
-  - `Store`: Interface untuk data toko
-  - `StoreSummary`: Interface untuk ringkasan toko
-  - `FinancialSummary`: Interface untuk ringkasan keuangan
-
-#### **src/utils/**
-
-- **sampleData.ts**: Data dummy untuk testing dan demo aplikasi
-
-#### **Configuration Files**
-
-- **tailwind.config.js**: Konfigurasi Tailwind CSS dengan custom theme
-- **postcss.config.js**: Konfigurasi PostCSS untuk Tailwind
-- **.env**: Environment variables untuk Firebase configuration
-- **package.json**: Dependencies, scripts, dan metadata project
-- **tsconfig.json**: Konfigurasi TypeScript compiler
-
-### 🔧 Konfigurasi Files
-
-#### **package.json Dependencies**
-
-```json
-{
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "firebase": "^10.x.x",
-    "typescript": "^4.x.x",
-    "chart.js": "^4.x.x",
-    "react-chartjs-2": "^5.x.x",
-    "jspdf": "^2.x.x",
-    "jspdf-autotable": "^3.x.x"
-  },
-  "devDependencies": {
-    "@types/react": "^18.x.x",
-    "@types/react-dom": "^18.x.x",
-    "tailwindcss": "^3.x.x",
-    "postcss": "^8.x.x",
-    "autoprefixer": "^10.x.x",
-    "eslint": "^8.x.x"
-  }
-}
-```
-
-#### **tailwind.config.js**
-
-```javascript
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          // custom colors
-        },
-        success: {
-          // success colors
-        },
-        danger: {
-          // danger colors
-        },
-        warning: {
-          // warning colors
-        },
-      },
-      animation: {
-        "fade-in": "fadeIn 0.5s ease-in-out",
-        "slide-up": "slideUp 0.3s ease-out",
-        "bounce-gentle": "bounceGentle 2s infinite",
-      },
-    },
-  },
-  plugins: [],
-};
-```
-
-#### **tsconfig.json**
-
-```json
-{
-  "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "es6"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": ["src"]
-}
-```
-
-#### **.env Template**
-
-```env
-REACT_APP_FIREBASE_API_KEY=your_api_key_here
-REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-REACT_APP_FIREBASE_APP_ID=your_app_id
-```
-
-### 📊 Data Flow Architecture
-
-```
-User Interface (Components)
-         ↓
-   Custom Hooks (useAuth, useFirestore)
-         ↓
-   Firebase Services (Firestore, Auth)
-         ↓
-   Database (Firestore Collections)
-```
-
-### 🔄 Component Hierarchy
-
-```
-App.tsx
-├── Login.tsx (if not authenticated)
-└── Main App (if authenticated)
-    ├── Header.tsx
-    └── Content
-        ├── Tab Navigation (Admin only)
-        ├── Dashboard Tab
-        │   ├── FinancialSummary.tsx
-        │   ├── SampleDataButton.tsx
-        │   ├── AddTransaction.tsx
-        │   └── TransactionList.tsx (Admin only)
-        ├── Analytics Tab (Admin only)
-        │   └── FinancialAnalytics.tsx
-        └── Stores Tab (Admin only)
-            └── StoreManager.tsx
-        └── Admin Toko Dashboard
-            ├── FinancialSummary.tsx
-            ├── SampleDataButton.tsx
-            ├── AddTransaction.tsx
-            └── TransactionHistory.tsx
-```
-
-### 🎯 Key Features by File
-
-| File                     | Primary Function       | Key Features                                               |
-| ------------------------ | ---------------------- | ---------------------------------------------------------- |
-| `App.tsx`                | Main orchestrator      | Authentication routing, tab management                     |
-| `Login.tsx`              | User authentication    | Multi-level login, form validation                         |
-| `Header.tsx`             | Navigation & user info | User avatar, level display, logout                         |
-| `FinancialSummary.tsx`   | Financial dashboard    | Store summaries, total calculations                        |
-| `FinancialAnalytics.tsx` | Financial analytics    | Modern charts (Bar, Line, Doughnut), data visualization    |
-| `AddTransaction.tsx`     | Transaction creation   | Form validation, store selection, auto-update date         |
-| `TransactionList.tsx`    | Transaction management | Filtering, deletion, modal details, scrolling (Admin only) |
-| `TransactionHistory.tsx` | Transaction history    | Filtering, sorting, store display, scrolling (Admin Toko)  |
-| `StoreManager.tsx`       | Store CRUD operations  | Add, edit, delete stores (Admin only)                      |
-| `useFirestore.ts`        | Database operations    | Real-time data, CRUD functions                             |
-| `useAuth.ts`             | Authentication logic   | Login/logout, level management                             |
-
-## 🚀 Cara Menjalankan Aplikasi
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js (versi 14 atau lebih baru)
-- npm atau yarn
-- Akun Firebase (untuk database)
+- **Node.js**: Versi 14 atau lebih tinggi
+- **npm**: Package manager
+- **Firebase Account**: Untuk backend services
 
 ### Installation
 
-1. **Clone repository**
+1. **Clone repository**:
 
    ```bash
    git clone <repository-url>
    cd financial-management-app
    ```
 
-2. **Install dependencies**
+2. **Install dependencies**:
 
    ```bash
    npm install
    ```
 
-3. **Setup Firebase**
+3. **Setup Firebase**:
 
-   - Buat project baru di [Firebase Console](https://console.firebase.google.com/)
-   - Aktifkan Firestore Database
-   - Buat file `.env` di root project dengan konfigurasi Firebase:
+   - Ikuti panduan lengkap di [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
+   - Atau jalankan script otomatis:
 
-   ```
-   REACT_APP_FIREBASE_API_KEY=your_api_key
-   REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-   REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   REACT_APP_FIREBASE_APP_ID=your_app_id
+   ```bash
+   node scripts/setup-firebase-users.js
    ```
 
-4. **Jalankan aplikasi**
+4. **Konfigurasi Environment Variables**:
+   Buat file `.env` di root project:
+
+   ```env
+   REACT_APP_FIREBASE_API_KEY=your-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-app-id
+   ```
+
+5. **Jalankan aplikasi**:
 
    ```bash
    npm start
    ```
 
-5. **Buka browser**
-   - Aplikasi akan berjalan di `http://localhost:3000`
-   - Login dengan kredensial yang tersedia
+6. **Login dengan kredensial yang telah dikonfigurasi di Firebase Console**
 
 ## 👥 Level Akses dan Fitur
 
-### Admin Utama (admin/admin123)
+### Admin Utama
 
 - ✅ Akses penuh ke semua fitur
 - ✅ Kelola toko (tambah, edit, hapus)
@@ -422,7 +172,7 @@ App.tsx
 - ✅ Export data transaksi ke PDF
 - ✅ Akses data sample
 
-### Admin Toko (admintoko/admintoko)
+### Admin Toko
 
 - ✅ Lihat ringkasan keuangan konsolidasi
 - ✅ Tambah transaksi dengan waktu real-time
@@ -481,17 +231,21 @@ service cloud.firestore {
 
 ### Autentikasi
 
-- Sistem login dengan level akses berbeda
-- Penyimpanan state di localStorage
-- Validasi input yang ketat
-- Pembatasan akses berdasarkan level admin
+- **Firebase Authentication**: Sistem login yang aman dengan email/password
+- **Role-based Access Control**: Akses berdasarkan peran (admin/admintoko)
+- **Real-time Auth State**: Status login terupdate secara real-time
+- **Secure Token Management**: Firebase menangani token autentikasi
+- **Validasi Input**: Validasi form yang ketat
+- **Pembatasan Akses**: UI dan data dibatasi berdasarkan peran user
 
 ### Data Protection
 
-- Validasi data sebelum disimpan
-- Error handling yang komprehensif
-- Backup data otomatis di Firestore
-- Waktu input yang akurat untuk audit trail
+- **Firestore Security Rules**: Aturan keamanan untuk akses data
+- **Real-time Data Sync**: Data tersinkronisasi secara otomatis
+- **Error Handling**: Penanganan error yang komprehensif
+- **Data Validation**: Validasi data sebelum disimpan ke database
+- **Audit Trail**: Waktu input yang akurat untuk tracking
+- **Backup Otomatis**: Firebase menangani backup data secara otomatis
 
 ## 📈 Performance
 
@@ -517,12 +271,62 @@ service cloud.firestore {
 npm run build
 ```
 
-### Hosting Options
+### Firebase Hosting
 
-- **Firebase Hosting**: Recommended untuk Firebase project
-- **Vercel**: Easy deployment dengan Git integration
-- **Netlify**: Free hosting dengan CI/CD
-- **GitHub Pages**: Free hosting untuk open source
+```bash
+firebase deploy --only hosting
+```
+
+### Hosting URL
+
+Aplikasi tersedia di: **https://finapp-c956b.web.app**
+
+## 🔥 Firebase Setup
+
+### Prerequisites
+
+1. **Firebase Project**: Buat project di [Firebase Console](https://console.firebase.google.com/)
+2. **Node.js**: Versi 14 atau lebih tinggi
+3. **npm**: Package manager
+
+### Quick Setup
+
+1. **Clone repository dan install dependencies**:
+
+   ```bash
+   git clone <repository-url>
+   cd financial-management-app
+   npm install
+   ```
+
+2. **Setup Firebase**:
+
+   - Ikuti panduan lengkap di [FIREBASE_SETUP.md](FIREBASE_SETUP.md)
+   - Atau jalankan script otomatis:
+
+   ```bash
+   node scripts/setup-firebase-users.js
+   ```
+
+3. **Konfigurasi Environment Variables**:
+   Buat file `.env` di root project:
+
+   ```env
+   REACT_APP_FIREBASE_API_KEY=your-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-app-id
+   ```
+
+4. **Jalankan aplikasi**:
+
+   ```bash
+   npm start
+   ```
+
+5. **Login dengan kredensial yang telah dikonfigurasi di Firebase Console**
 
 ## 🤝 Contributing
 
@@ -545,6 +349,26 @@ Untuk pertanyaan atau dukungan:
 - Dokumentasi lengkap tersedia di [SETUP.md](SETUP.md)
 - Panduan Tailwind CSS tersedia di [TAILWIND_GUIDE.md](TAILWIND_GUIDE.md)
 
+## 🎯 Roadmap
+
+### Fitur yang Akan Datang
+
+- [ ] **Notifikasi Real-time**: Notifikasi untuk transaksi baru
+- [ ] **Multi-currency Support**: Dukungan untuk berbagai mata uang
+- [ ] **Advanced Analytics**: Analisis keuangan yang lebih detail
+- [ ] **Export Excel**: Export data ke format Excel
+- [ ] **Backup & Restore**: Fitur backup dan restore data
+- [ ] **API Integration**: Integrasi dengan sistem eksternal
+
+### Performance Improvements
+
+- [ ] **Code Splitting**: Optimasi loading dengan code splitting
+- [ ] **Service Worker**: Offline support dengan PWA
+- [ ] **Image Optimization**: Optimasi gambar untuk performa
+- [ ] **Caching Strategy**: Strategi caching yang lebih baik
+
 ---
 
 **Dibuat dengan ❤️ menggunakan React.js, Tailwind CSS, Chart.js, dan Firebase**
+
+**Live Demo**: [https://finapp-c956b.web.app](https://finapp-c956b.web.app)

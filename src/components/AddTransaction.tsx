@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Transaction, Store } from "../types";
+import { Store } from "../types";
+import { useFirestore } from "../hooks/useFirestore";
 
 interface Props {
-  onAddTransaction: (
-    transaction: Omit<Transaction, "id" | "createdAt">
-  ) => void;
   stores: Store[];
   level?: "admin" | "admintoko" | null;
-  userStore?: string;
+  userStore?: string | null;
 }
 
 const AddTransaction: React.FC<Props> = ({
-  onAddTransaction,
   stores,
   level = "admin",
   userStore,
 }) => {
+  const { addTransaction } = useFirestore();
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   // Fungsi untuk mendapatkan tanggal hari ini dalam format YYYY-MM-DD
   const getTodayDate = () => {
     const today = new Date();
@@ -35,7 +36,7 @@ const AddTransaction: React.FC<Props> = ({
   });
 
   // Filter stores untuk admin toko (semua toko tersedia)
-  const availableStores = stores;
+  const availableStores = stores || [];
 
   // Update tanggal setiap kali form dibuka atau komponen di-render
   useEffect(() => {
@@ -61,44 +62,57 @@ const AddTransaction: React.FC<Props> = ({
     return () => clearInterval(interval);
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
     if (!formData.storeName || !formData.amount || !formData.description) {
-      alert("Semua field harus diisi!");
+      setError("Semua field harus diisi!");
       return;
     }
 
-    // Buat tanggal dengan waktu input yang sebenarnya
-    const inputDate = new Date(formData.date);
-    const now = new Date();
-    inputDate.setHours(
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
-      now.getMilliseconds()
-    );
+    setIsSubmitting(true);
 
-    const transaction = {
-      storeName: formData.storeName,
-      amount: parseFloat(formData.amount),
-      type: formData.type,
-      description: formData.description,
-      date: inputDate,
-    };
+    try {
+      // Buat tanggal dengan waktu input yang sebenarnya
+      const inputDate = new Date(formData.date);
+      const now = new Date();
+      inputDate.setHours(
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds()
+      );
 
-    onAddTransaction(transaction);
+      const transaction = {
+        storeName: formData.storeName,
+        amount: parseFloat(formData.amount),
+        type: formData.type,
+        description: formData.description,
+        date: inputDate,
+      };
 
-    // Reset form
-    setFormData({
-      storeName: "",
-      amount: "",
-      type: "income",
-      description: "",
-      date: getTodayDate(),
-    });
+      await addTransaction(transaction);
 
-    setIsOpen(false);
+      // Reset form
+      setFormData({
+        storeName: level === "admintoko" && userStore ? userStore : "",
+        amount: "",
+        type: "income",
+        description: "",
+        date: getTodayDate(),
+      });
+
+      // Show success message
+      alert("Transaksi berhasil ditambahkan!");
+
+      setIsOpen(false);
+    } catch (error: any) {
+      console.error("Error adding transaction:", error);
+      setError("Gagal menambahkan transaksi. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (
@@ -143,7 +157,7 @@ const AddTransaction: React.FC<Props> = ({
               <label className="text-sm font-bold text-gray-700 mb-2">
                 🏪 Pilih Toko *
               </label>
-              {availableStores.length === 0 ? (
+              {!availableStores || availableStores.length === 0 ? (
                 <div className="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg shadow-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-yellow-600 text-lg">⚠️</span>
@@ -252,11 +266,23 @@ const AddTransaction: React.FC<Props> = ({
             <button
               type="submit"
               className="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
-              disabled={stores.length === 0}
+              disabled={
+                !availableStores || availableStores.length === 0 || isSubmitting
+              }
             >
-              💾 Simpan Transaksi
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Menyimpan...
+                </>
+              ) : (
+                "💾 Simpan Transaksi"
+              )}
             </button>
           </div>
+          {error && (
+            <div className="text-red-500 text-sm text-center mt-4">{error}</div>
+          )}
         </form>
       )}
     </div>

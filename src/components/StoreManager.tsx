@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useFirestore } from "../hooks/useFirestore";
 
 interface Store {
   id: string;
@@ -10,20 +11,15 @@ interface Store {
 
 interface Props {
   stores: Store[];
-  onAddStore: (store: Omit<Store, "id">) => void;
-  onDeleteStore: (id: string) => void;
-  onEditStore: (id: string, store: Omit<Store, "id">) => void;
 }
 
-const StoreManager: React.FC<Props> = ({
-  stores,
-  onAddStore,
-  onDeleteStore,
-  onEditStore,
-}) => {
+const StoreManager: React.FC<Props> = ({ stores }) => {
+  const { addStore, updateStore, deleteStore } = useFirestore();
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState("");
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -31,31 +27,41 @@ const StoreManager: React.FC<Props> = ({
     phone: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
     if (!formData.name.trim()) {
-      alert("Nama toko harus diisi!");
+      setError("Nama toko harus diisi!");
       return;
     }
 
-    if (isEditing) {
-      onEditStore(editingId, formData);
-      setIsEditing(false);
-      setEditingId("");
-    } else {
-      onAddStore(formData);
+    setIsSubmitting(true);
+
+    try {
+      if (isEditing) {
+        await updateStore(editingId, formData);
+        setIsEditing(false);
+        setEditingId("");
+      } else {
+        await addStore(formData);
+      }
+
+      // Reset form
+      setFormData({
+        name: "",
+        description: "",
+        address: "",
+        phone: "",
+      });
+
+      setIsOpen(false);
+    } catch (error: any) {
+      console.error("Error saving store:", error);
+      setError("Gagal menyimpan toko. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Reset form
-    setFormData({
-      name: "",
-      description: "",
-      address: "",
-      phone: "",
-    });
-
-    setIsOpen(false);
   };
 
   const handleEdit = (store: Store) => {
@@ -68,11 +74,17 @@ const StoreManager: React.FC<Props> = ({
     setIsEditing(true);
     setEditingId(store.id);
     setIsOpen(true);
+    setError("");
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus toko ini?")) {
-      onDeleteStore(id);
+      try {
+        await deleteStore(id);
+      } catch (error: any) {
+        console.error("Error deleting store:", error);
+        alert("Gagal menghapus toko. Silakan coba lagi.");
+      }
     }
   };
 
@@ -80,6 +92,7 @@ const StoreManager: React.FC<Props> = ({
     setIsOpen(false);
     setIsEditing(false);
     setEditingId("");
+    setError("");
     setFormData({
       name: "",
       description: "",
@@ -96,6 +109,8 @@ const StoreManager: React.FC<Props> = ({
       ...prev,
       [name]: value,
     }));
+    // Clear error when user starts typing
+    if (error) setError("");
   };
 
   return (
@@ -180,19 +195,36 @@ const StoreManager: React.FC<Props> = ({
             />
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <span className="text-red-500">⚠️</span>
+              <span className="font-medium">{error}</span>
+            </div>
+          )}
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+              disabled={isSubmitting}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               ❌ Batal
             </button>
             <button
               type="submit"
-              className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
+              disabled={isSubmitting}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEditing ? "✏️ Update Toko" : "💾 Simpan Toko"}
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  {isEditing ? "Mengupdate..." : "Menyimpan..."}
+                </>
+              ) : (
+                <>{isEditing ? "✏️ Update Toko" : "💾 Simpan Toko"}</>
+              )}
             </button>
           </div>
         </form>

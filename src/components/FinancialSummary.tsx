@@ -4,7 +4,7 @@ import { FinancialSummary as FinancialSummaryType } from "../types";
 interface Props {
   summary: FinancialSummaryType;
   level?: "admin" | "admintoko" | null;
-  userStore?: string; // Untuk admin toko, nama tokonya
+  userStore?: string | null; // Untuk admin toko, nama tokonya
 }
 
 const FinancialSummary: React.FC<Props> = ({
