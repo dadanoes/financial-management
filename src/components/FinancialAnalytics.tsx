@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Transaction } from "../types";
 import {
   Chart as ChartJS,
@@ -142,33 +142,36 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
   }, [periodData]);
 
   // Format date for display
-  const formatDate = (dateStr: string) => {
-    switch (selectedPeriod) {
-      case "daily":
-        return new Date(dateStr).toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-        });
-      case "weekly":
-        const date = new Date(dateStr);
-        const endOfWeek = new Date(date.getTime() + 6 * 24 * 60 * 60 * 1000);
-        return `${date.toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-        })} - ${endOfWeek.toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-        })}`;
-      case "monthly":
-        const [year, month] = dateStr.split("-");
-        return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString(
-          "id-ID",
-          { month: "long", year: "numeric" }
-        );
-      case "yearly":
-        return dateStr;
-    }
-  };
+  const formatDate = useCallback(
+    (dateStr: string) => {
+      switch (selectedPeriod) {
+        case "daily":
+          return new Date(dateStr).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          });
+        case "weekly":
+          const date = new Date(dateStr);
+          const endOfWeek = new Date(date.getTime() + 6 * 24 * 60 * 60 * 1000);
+          return `${date.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          })} - ${endOfWeek.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          })}`;
+        case "monthly":
+          const [year, month] = dateStr.split("-");
+          return new Date(
+            parseInt(year),
+            parseInt(month) - 1
+          ).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+        case "yearly":
+          return dateStr;
+      }
+    },
+    [selectedPeriod]
+  );
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -248,7 +251,7 @@ const FinancialAnalytics: React.FC<Props> = ({ transactions }) => {
       labels,
       datasets,
     };
-  }, [periodData, selectedType, chartType, totals]);
+  }, [periodData, selectedType, chartType, totals, formatDate]);
 
   // Chart options
   const chartOptions = {
